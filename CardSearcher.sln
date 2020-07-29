@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution files", "_Solution files", "{9D31F058-289B-4327-A9D8-093DE11B305D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{C386B213-C965-49B0-AABA-F591FE4B3B8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperMemoAssistant.Plugins.CardSearcher", "src\SuperMemoAssistant.Plugins.CardSearcher\SuperMemoAssistant.Plugins.CardSearcher.csproj", "{26E9BC52-902B-409C-9D8C-C82272658DA5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{40DD002E-F7F4-4D3C-9001-16ED45D4310E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperMemoAssistant.Plugins.CardSearcher.Tests", "src\SuperMemoAssistant.Plugins.CardSearcher.Tests\SuperMemoAssistant.Plugins.CardSearcher.Tests.csproj", "{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		1. Alpha (Debug)|Any CPU = 1. Alpha (Debug)|Any CPU
+		2. Beta (Release)|Any CPU = 2. Beta (Release)|Any CPU
+		3. Stable (Release)|Any CPU = 3. Stable (Release)|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.1. Alpha (Debug)|Any CPU.ActiveCfg = Debug|Any CPU
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.1. Alpha (Debug)|Any CPU.Build.0 = Debug|Any CPU
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.2. Beta (Release)|Any CPU.ActiveCfg = Release|Any CPU
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.2. Beta (Release)|Any CPU.Build.0 = Release|Any CPU
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.3. Stable (Release)|Any CPU.ActiveCfg = Release|Any CPU
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.3. Stable (Release)|Any CPU.Build.0 = Release|Any CPU
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26E9BC52-902B-409C-9D8C-C82272658DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.1. Alpha (Debug)|Any CPU.ActiveCfg = Debug|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.1. Alpha (Debug)|Any CPU.Build.0 = Debug|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.2. Beta (Release)|Any CPU.ActiveCfg = Release|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.2. Beta (Release)|Any CPU.Build.0 = Release|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.3. Stable (Release)|Any CPU.ActiveCfg = Release|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.3. Stable (Release)|Any CPU.Build.0 = Release|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{26E9BC52-902B-409C-9D8C-C82272658DA5} = {C386B213-C965-49B0-AABA-F591FE4B3B8B}
+		{78FF6C0F-5FD3-4ECD-A344-4292F9FEBC5E} = {40DD002E-F7F4-4D3C-9001-16ED45D4310E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7F02F424-60B8-4F99-8B82-FC5D3F759F38}
+	EndGlobalSection
+EndGlobal
