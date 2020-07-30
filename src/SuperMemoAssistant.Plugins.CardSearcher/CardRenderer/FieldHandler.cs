@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 {
 
-  using FieldHandlerFunc = Action<Dictionary<string, RenderContent>, string>;
-
   public partial class Renderer
   {
 
@@ -40,33 +38,33 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     }
 
-    public void HandleField(Dictionary<string, string> obj, string key, TemplateType type)
+    public string HandleField(Dictionary<string, string> obj, string key, TemplateType type)
     {
 
       if (!HandleFieldArgumentsAreValid(obj, key))
-        return;
+        return string.Empty;
 
       string fieldName = GetFieldName(key);
       if (fieldName.IsNullOrEmpty())
-        return;
+        return string.Empty;
 
       if (SpecialFields.Contains(fieldName))
-        HandleSpecialField(key, type);
+       return HandleSpecialField(key, type);
 
       else
-        HandleUserField(obj, key, type);
+        return HandleUserField(obj, key, type);
 
     }
 
-    private void HandleUserField(Dictionary<string, string> input, string key, TemplateType type)
+    private string HandleUserField(Dictionary<string, string> input, string key, TemplateType type)
     {
 
       string fieldName = GetFieldName(key);
 
-      if (!input.TryGetValue(fieldName, out var content))
+      if (!input.TryGetValue(fieldName, out var fieldContent))
       {
         LogTo.Error("Failed to HandleUnknownField");
-        return;
+        return string.Empty;
       }
 
       var split = key.Split(':');
@@ -81,34 +79,17 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
           .ToList();
 
         if (type == TemplateType.Question)
-          ApplyQuestionFieldFilters(fieldName, filters);
+          fieldContent = ApplyQuestionFieldFilters(filters, fieldContent);
 
         else
-          ApplyAnswerFieldFilters(fieldName, filters);
+          fieldContent = ApplyAnswerFieldFilters(filters, fieldContent);
 
       }
-      else
-      {
 
-        if (type == TemplateType.Question)
-        {
-
-          QuestionContent[fieldName] = new RenderContent();
-          QuestionContent[fieldName].Content = content;
-
-        }
-        else
-        {
-
-          AnswerContent[fieldName] = new RenderContent();
-          AnswerContent[fieldName].Content = content;
-
-        }
-
-      }
+      return fieldContent;
     }
 
-    private void HandleSpecialField(string key, TemplateType type)
+    private string HandleSpecialField(string key, TemplateType type)
     {
 
       string fieldName = GetFieldName(key);
@@ -117,72 +98,76 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       {
 
         if (type == TemplateType.Answer)
-          HandleSpecialFieldAnswer(TagFieldHandler, key);
+          return HandleSpecialFieldAnswer(TagFieldHandler, key);
 
         else
-          HandleSpecialFieldQuestion(TagFieldHandler, key);
+          return HandleSpecialFieldQuestion(TagFieldHandler, key);
 
       }
       else if (fieldName == "Type")
       {
 
         if (type == TemplateType.Answer)
-          HandleSpecialFieldAnswer(TypeFieldHandler, key);
+          return HandleSpecialFieldAnswer(TypeFieldHandler, key);
 
         else
-          HandleSpecialFieldQuestion(TypeFieldHandler, key);
+          return HandleSpecialFieldQuestion(TypeFieldHandler, key);
 
       }
       else if (fieldName == "Deck")
       {
 
         if (type == TemplateType.Answer)
-          HandleSpecialFieldAnswer(DeckFieldHandler, key);
+          return HandleSpecialFieldAnswer(DeckFieldHandler, key);
 
         else
-          HandleSpecialFieldQuestion(DeckFieldHandler, key);
+          return HandleSpecialFieldQuestion(DeckFieldHandler, key);
 
       }
       else if (fieldName == "Subdeck")
       {
 
         if (type == TemplateType.Answer)
-          HandleSpecialFieldAnswer(SubdeckFieldHandler, key);
+          return HandleSpecialFieldAnswer(SubdeckFieldHandler, key);
 
         else
-          HandleSpecialFieldQuestion(SubdeckFieldHandler, key);
+          return HandleSpecialFieldQuestion(SubdeckFieldHandler, key);
 
       }
       else if (fieldName == "Card")
       {
 
         if (type == TemplateType.Answer)
-          HandleSpecialFieldAnswer(CardFieldHandler, key);
+          return HandleSpecialFieldAnswer(CardFieldHandler, key);
 
         else
-          HandleSpecialFieldQuestion(CardFieldHandler, key);
+          return HandleSpecialFieldQuestion(CardFieldHandler, key);
 
       }
       else if (fieldName == "FrontSide")
       {
 
         if (type == TemplateType.Answer)
-          HandleSpecialFieldAnswer(FrontSideFieldHandler, key);
+          return HandleSpecialFieldAnswer(FrontSideFieldHandler, key);
 
         else
-          HandleSpecialFieldQuestion(FrontSideFieldHandler, key);
+          return HandleSpecialFieldQuestion(FrontSideFieldHandler, key);
+      }
+      else
+      {
+        return string.Empty;
       }
 
     }
 
-    private void HandleSpecialFieldAnswer(FieldHandlerFunc fieldHandler, string key)
+    private string HandleSpecialFieldAnswer(Func<string> specialFieldFunc, string key)
     {
 
       var split = key.Split(':');
       var fieldName = split.Last();
 
       // Add the content from the special field handler
-      fieldHandler(AnswerContent, fieldName);
+      string specialContent = specialFieldFunc();
 
       // Add filters if specified
       if (split.Length > 1)
@@ -194,18 +179,20 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
           .Reverse()
           .ToList();
 
-        ApplyAnswerFieldFilters(fieldName, filters);
+        specialContent = ApplyAnswerFieldFilters(filters, specialContent);
 
       }
+
+      return specialContent;
     }
 
-    private void HandleSpecialFieldQuestion(FieldHandlerFunc fieldHandler, string key)
+    private string HandleSpecialFieldQuestion(Func<string> specialFieldFunc, string key)
     {
 
       var split = key.Split(':');
       var fieldName = split.Last();
 
-      fieldHandler(QuestionContent, fieldName);
+      string specialContent = specialFieldFunc();
 
       if (split.Length > 1)
       {
@@ -216,39 +203,41 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
           .Reverse()
           .ToList();
 
-        ApplyQuestionFieldFilters(fieldName, filters);
+        specialContent = ApplyQuestionFieldFilters(filters, specialContent);
 
       }
+
+      return specialContent;
     }
 
-    public void TagFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
+    public string TagFieldHandler()
     {
-      input[fieldName].Content = Card.Note.Tags;
+      return Card.Note.Tags;
     }
 
-    public void TypeFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
+    public string TypeFieldHandler()
     {
-      input[fieldName].Content = Card.Note.NoteType.Name;
+      return Card.Note.NoteType.Name;
     }
 
-    public void SubdeckFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
+    public string SubdeckFieldHandler()
     {
-      input[fieldName].Content = Card.Note.NoteType.Name;
+      return Card.Note.NoteType.Name;
     }
 
-    public void DeckFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
+    public string DeckFieldHandler()
     {
-      input[fieldName].Content = Card.Note.NoteType.Name;
+      return Card.Note.NoteType.Name;
     }
 
-    public void CardFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
+    public string CardFieldHandler()
     {
-      input[fieldName].Content = Card.Note.NoteType.Name;
+      return Card.Note.NoteType.Name;
     }
 
-    public void FrontSideFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
+    public string FrontSideFieldHandler()
     {
-      input[fieldName].Content = Card.Note.NoteType.Name;
+      return Card.Note.NoteType.Name;
     }
   }
 }

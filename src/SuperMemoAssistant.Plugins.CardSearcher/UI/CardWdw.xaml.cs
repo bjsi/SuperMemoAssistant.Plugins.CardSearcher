@@ -1,7 +1,10 @@
-﻿using SuperMemoAssistant.Plugins.CardSearcher.Models;
+﻿using SuperMemoAssistant.Plugins.CardSearcher.CardRenderer;
+using SuperMemoAssistant.Plugins.CardSearcher.Models;
+using SuperMemoAssistant.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,6 +69,32 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
       {
         _cards.Add(card);
       }
+    }
+
+    private void ImportBtn_Click(object sender, RoutedEventArgs e)
+    {
+
+      ICollectionView cards = CollectionViewSource.GetDefaultView(DG1.ItemsSource);
+
+      Card card = cards
+        .Cast<Card>()
+        .Where(e => e.ToImport)
+        .FirstOrDefault();
+
+      if (card.IsNull())
+      {
+        MessageBox.Show("Failed to import card because card was null");
+        return;
+      }
+
+      var builder = new AnkiCardBuilder(card);
+
+      Svc.SM.Registry.Element.Add(
+        out _,
+        Interop.SuperMemo.Elements.Models.ElemCreationFlags.ForceCreate,
+        builder.CreateElementBuilder()
+      );
+
     }
   }
 }

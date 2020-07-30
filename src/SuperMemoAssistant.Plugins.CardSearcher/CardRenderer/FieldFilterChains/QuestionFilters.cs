@@ -11,23 +11,13 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
   public partial class Renderer
   {
 
-    public void QuestionClozeFilter(string fieldName)
+    public string QuestionClozeFilter(string content)
     {
-
-      string question = string.Empty;
-
-      if (!QuestionContent.TryGetValue(fieldName, out var renderedContent))
-      {
-        LogTo.Error("Failed to CreateClozeQuestion because cloze is null");
-        return;
-      }
-
-      var content = renderedContent.Content;
 
       if (string.IsNullOrEmpty(content))
       {
         LogTo.Error("Failed to CreateClozeQuestion because cloze is null");
-        return;
+        return string.Empty;
       }
 
       // Search for the cloze
@@ -35,8 +25,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (!match.Success || match.Groups.Count < 3)
       {
         LogTo.Error("Failed to CreateClozeQuestion because cloze regex didn't match");
-        return;
+        return string.Empty;
       }
+
+      string question = string.Empty;
 
       int prevIndex = 0;
       while (match.Success && match.Groups.Count >= 3)
@@ -93,21 +85,18 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
       }
 
-      renderedContent.Content = question;
-      renderedContent.AppliedFilters.Add("cloze");
+      return question;
 
     }
 
-    public void QuestionTypeFilter(string fieldName)
+    // TODO:
+    public string QuestionTypeFilter(string input)
     {
 
-      if (!QuestionContent.TryGetValue(fieldName, out var renderContent))
-      {
-        LogTo.Error($"Failed to apply Create to field {fieldName} because the content dict does not contain a corresponding key");
-        return;
-      }
+      if (input.IsNullOrEmpty())
+        return input;
 
-      renderContent.UnappliedFilters.Add("type");
+      return input;
 
     }
   }

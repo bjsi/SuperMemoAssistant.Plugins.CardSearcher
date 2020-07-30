@@ -11,21 +11,13 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
   public partial class Renderer
   {
 
-    public void AnswerClozeFilter(string fieldName)
+    public string AnswerClozeFilter(string content)
     {
-
-      if (!AnswerContent.TryGetValue(fieldName, out var renderContent))
-      {
-        LogTo.Error($"Failed to apply Create to field {fieldName} because the content dict does not contain a corresponding key");
-        return;
-      }
-
-      string content = renderContent.Content;
 
       if (string.IsNullOrEmpty(content))
       {
-        LogTo.Error("Failed to CreateClozeAnswer because fieldContent is null");
-        return;
+        LogTo.Error("Failed to CreateClozeAnswer because fieldContent is null or empty");
+        return string.Empty;
       }
 
       Match match = ClozeRegex.Match(content);
@@ -53,34 +45,26 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       }
 
       // Create the answerString
-      string answerString = string.Empty;
+      string answer = string.Empty;
       if (answerList != null && answerList.Count > 0)
       {
 
         // Create a list of answers
         for (int i = 0; i < answerList.Count; i++)
         {
-          answerString += $"{i + 1}: {answerList[i]}";
+          answer += $"{i + 1}: {answerList[i]}";
         }
 
       }
 
-      renderContent.Content = answerString;
-      renderContent.AppliedFilters.Add("cloze");
+      return answer;
 
     }
 
-    public void AnswerTypeFilter(string fieldName)
+    // TODO:
+    public string AnswerTypeFilter(string input)
     {
-
-      if (!AnswerContent.TryGetValue(fieldName, out var renderContent))
-      {
-        LogTo.Error($"Failed to apply Create to field {fieldName} because the content dict does not contain a corresponding key");
-        return;
-      }
-
-      renderContent.UnappliedFilters.Add("type");
-
+      return input;
     }
   }
 }

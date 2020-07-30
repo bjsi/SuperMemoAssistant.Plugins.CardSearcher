@@ -20,58 +20,64 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     };
 
-    private void ApplyQuestionFieldFilters(string fieldName, List<string> filters)
+    private string ApplyQuestionFieldFilters(List<string> filters, string input)
     {
 
-      if (!QuestionContent.ContainsKey(fieldName))
-      {
-        LogTo.Error("Failed to find fieldName in the QuestionContent dictionary");
-        return;
-      }
+      if (filters.IsNull() || !filters.Any())
+        return input;
+
+      if (input.IsNullOrEmpty())
+        return input;
 
       foreach (var filter in filters)
       {
 
         if (filter == "hint")
-          HintFilter(QuestionContent, fieldName);
+          input = HintFilter(input);
 
         else if (filter == "type")
-          QuestionTypeFilter(fieldName);
+          input = QuestionTypeFilter(input);
 
         else if (filter == "cloze")
-          QuestionClozeFilter(fieldName);
+          input = QuestionClozeFilter(input);
 
         else if (filter == "text")
-          TextFilter(QuestionContent, fieldName);
+          input = TextFilter(input);
 
       }
+
+      return input;
+
     }
 
-    private void ApplyAnswerFieldFilters(string fieldName, List<string> filters)
+    private string ApplyAnswerFieldFilters(List<string> filters, string input)
     {
 
-      if (!AnswerContent.ContainsKey(fieldName))
-      {
-        LogTo.Error("Failed to find fieldName in the QuestionContent dictionary");
-        return;
-      }
+      if (filters.IsNull() || !filters.Any())
+        return input;
+
+      if (input.IsNullOrEmpty())
+        return input;
 
       foreach (var filter in filters)
       {
 
         if (filter == "hint")
-          HintFilter(AnswerContent, fieldName);
+          input = HintFilter(input);
 
         else if (filter == "type")
-          AnswerTypeFilter(fieldName);
+          input = AnswerTypeFilter(input);
 
         else if (filter == "cloze")
-          AnswerClozeFilter(fieldName);
+          input = AnswerClozeFilter(input);
 
         else if (filter == "text")
-          TextFilter(AnswerContent, fieldName);
+          input = TextFilter(input);
 
       }
+
+      return input;
+
     }
   }
 }

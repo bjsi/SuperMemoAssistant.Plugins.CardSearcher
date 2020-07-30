@@ -18,8 +18,6 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
   {
 
     private Card Card { get; set; }
-    private RenderContent QuestionContent { get; set; }
-    private RenderContent AnswerContent { get; set; }
     private TemplateRenderOptions RenderOptions { get; set; }
 
     private Dictionary<string, string> PlaceholderMap => new Dictionary<string, string>
@@ -32,26 +30,18 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     };
 
-    public AnkiCardBuilder(Card card, RenderContent questionContent, RenderContent answerContent)
+    public AnkiCardBuilder(Card card)
     {
 
       this.Card = card;
-      this.QuestionContent = questionContent;
-      this.AnswerContent = answerContent;
-
       AddFieldsToPlaceholderMap();
 
     }
 
-    public AnkiCardBuilder(Card card,
-                           RenderContent questionContent,
-                           RenderContent answerContent,
-                           TemplateRenderOptions renderOptions)
+    public AnkiCardBuilder(Card card, TemplateRenderOptions renderOptions)
     {
 
       this.Card = card;
-      this.QuestionContent = questionContent;
-      this.AnswerContent = answerContent;
       this.RenderOptions = renderOptions;
 
       AddFieldsToPlaceholderMap();
@@ -68,59 +58,19 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     }
 
-    public string RenderQuestionForImport()
-    {
-
-      return new StubbleBuilder()
-      .Configure(settings =>
-      {
-        settings.AddValueGetter(typeof(Dictionary<string, RenderContent>), (obj, key, ignoreCase) =>
-        {
-
-          var input = obj as Dictionary<string, RenderContent>;
-          var fieldName = key.Split(':').Last();
-          return input[fieldName].Content;
-
-        });
-      })
-      .Build()
-      .Render(Card.Template.QuestionFormat, QuestionContent);
-
-    }
-
-    public string RenderAnswerForForImport()
-    {
-
-      return new StubbleBuilder()
-      .Configure(settings =>
-      {
-        settings.AddValueGetter(typeof(Dictionary<string, RenderContent>), (obj, key, ignoreCase) =>
-        {
-
-          var input = obj as Dictionary<string, RenderContent>;
-          var fieldName = key.Split(':').Last();
-          return input[fieldName].Content;
-
-        });
-      })
-      .Build()
-      .Render(Card.Template.QuestionFormat, AnswerContent);
-
-    }
-
-    public async Task<ElementBuilder> CreateElementBuilder()
+    public ElementBuilder CreateElementBuilder()
     {
 
       var contents = new List<ContentBase>();
       References refs = RenderOptions.Refs;
       refs.ReplacePlaceholders(PlaceholderMap);
 
-      // Create Question Content
-      string renderedQuestion = RenderQuestionForImport();
-      if (renderedQuestion.IsNullOrEmpty())
+      string question = Card.Question;
+      string answer = Card.Answer;
+      if (question.IsNullOrEmpty() || answer.IsNullOrEmpty())
       {
 
-        LogTo.Warning("Failed to CreateElementBuilder, renderedQuestion was null or empty");
+        LogTo.Warning("Failed to CreateElementBuilder, question or answer string was null or empty");
         return null;
 
       }
@@ -128,8 +78,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (RenderOptions.AddImageComponents)
       {
 
-        var imgs = MediaParser.ParseImages(renderedQuestion);
-        MediaParser.RemoveImageTags(renderedQuestion);
+        var imgs = MediaParser.ParseImages(question);
+        MediaParser.RemoveImageTags(question);
 
         foreach (var img in imgs)
         {
@@ -138,21 +88,11 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
       }
 
-      // Create Answer Content
-      string renderedAnswer = RenderAnswerForForImport();
-      if (renderedAnswer.IsNullOrEmpty())
-      {
-
-        LogTo.Warning("Failed to CreateElementBuilder, renderedAnswer was null or empty");
-        return null;
-
-      }
-
       if (RenderOptions.AddImageComponents)
       {
 
-        var imgs = MediaParser.ParseImages(renderedAnswer);
-        MediaParser.RemoveImageTags(renderedAnswer);
+        var imgs = MediaParser.ParseImages(answer);
+        MediaParser.RemoveImageTags(answer);
 
         foreach (var img in imgs)
         {
@@ -160,13 +100,14 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
       }
 
-      contents.Add(new TextContent(true, renderedAnswer, AtFlags.NonQuestion));
-      contents.Add(new TextContent(true, renderedQuestion));
+      contents.Add(new TextContent(true, question));
+      contents.Add(new TextContent(true, answer, AtFlags.NonQuestion));
 
       return new ElementBuilder(
         ElementType.Item,
         contents.ToArray()
       )
+      .WithLayout(RenderOptions.Layout)
       .WithReference(_ => refs);
 
     }

@@ -176,19 +176,18 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
     {
       get
       {
+        return new Renderer(this)
+          .Render(TemplateType.Question);
       }
     }
 
-    public Dictionary<string, RenderContent> RenderQuestionContent()
+    public string Answer
     {
-      return new Renderer(this)
-        .Render(TemplateType.Question);
-    }
-
-    public Dictionary<string, RenderContent> RenderAnswerContent()
-    {
-      return new Renderer(this)
-        .Render(TemplateType.Answer);
+      get
+      {
+        return new Renderer(this)
+          .Render(TemplateType.Answer);
+      }
     }
 
     // Relationships

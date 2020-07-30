@@ -32,14 +32,16 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     // (1: cloze number), (2: text), (3: hint)
     private static Regex ClozeRegex { get; } = new Regex(@"\{\{c(\d+)::(.*?)(?:::(.*?))?\}\}");
-
     // The card to be rendered.
     private Card Card { get; }
 
+    private TemplateRenderOptions RenderOptions { get; set; }
+
+
     // Rendered Field Content
     // Still contains media
-    private Dictionary<string, RenderContent> AnswerContent { get; set; } = new Dictionary<string, RenderContent>();
-    private Dictionary<string, RenderContent> QuestionContent { get; set; } = new Dictionary<string, RenderContent>();
+    // private Dictionary<string, RenderContent> AnswerContent { get; set; } = new Dictionary<string, RenderContent>();
+    // private Dictionary<string, RenderContent> QuestionContent { get; set; } = new Dictionary<string, RenderContent>();
 
     public Renderer(Card Card)
     {
@@ -49,33 +51,15 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     private StubbleVisitorRenderer BuildRenderer(TemplateType type)
     {
 
-      // Require a special value getter because  of anki's custom mustache templating.
-      // The fieldContentMap is a mapping between field names and content,
-      // but the template variables contain other information such as whether
-      // the field should be formatted like a cloze, whether there is a hint and so on.
-
       return new StubbleBuilder()
       .Configure(settings =>
       {
 
-        // stubble parses the anki card template parsing the strings between double braces {{ }}
-
         settings.AddValueGetter(typeof(Dictionary<string, string>), (val, key, ignoreCase) =>
         {
 
-          // The actual name of the field always comes last
-          // Filters like cloze and hint are prepended to the field name, separated by colons :
-
           var input = val as Dictionary<string, string>;
-
-          if (type == TemplateType.Question)
-            HandleField(input, key, type);
-          else
-            HandleField(input, key, type);
-
-          // Only using the renderer to build the Question/AnswerContent dictionaries
-          // Ignore output
-          return string.Empty;
+          return HandleField(input, key, type);
 
         })
         .SetEncodingFunction(x => x); // allow unescaped html
@@ -87,7 +71,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     /// Create the stubble html render for card content.
     /// </summary>
     /// <returns>Renderer or Null</returns>
-    public Dictionary<string, RenderContent> Render(TemplateType type)
+    public string Render(TemplateType type)
     {
 
       if (this.Card == null)
@@ -107,21 +91,12 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
       }
 
-      // Discards the string output, only focuses on creating the Question/AnswerContent fields
       if (type == TemplateType.Question)
-      {
+        return renderer.Render(Card.Template.QuestionFormat, Card.Note.Fields);
 
-        renderer.Render(Card.Template.QuestionFormat, Card.Note.Fields);
-        return QuestionContent;
-
-      }
       else
-      {
+        return renderer.Render(Card.Template.AnswerFormat, Card.Note.Fields);
 
-        renderer.Render(Card.Template.AnswerFormat, Card.Note.Fields);
-        return AnswerContent;
-
-      }
     }
   }
 }

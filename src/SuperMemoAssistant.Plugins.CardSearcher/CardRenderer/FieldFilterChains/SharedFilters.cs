@@ -11,17 +11,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
   public partial class Renderer
   {
 
-    public static void HintFilter(Dictionary<string, RenderContent> obj, string fieldName)
+    // TODO:
+    public static string HintFilter(string input)
     {
-
-      if (!obj.TryGetValue(fieldName, out var content))
-      {
-        LogTo.Error($"Failed to apply HintFilter to field {fieldName} because the content dict does not contain a corresponding key");
-        return;
-      }
-
-      content.UnappliedFilters.Add("hint");
-
+      return input;
     }
 
     /// <summary>
@@ -29,23 +22,15 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     /// </summary>
     /// <param name="obj"></param>
     /// <param name="fieldName"></param>
-    public static void TextFilter(Dictionary<string, RenderContent> obj, string fieldName)
+    public static string TextFilter(string input)
     {
 
-      if (!obj.TryGetValue(fieldName, out var renderedContent))
-      {
-        LogTo.Error($"Failed to apply TextFilter to field {fieldName} because the content dict does not contain a corresponding key");
-        return;
-      }
+      if (input.IsNullOrEmpty())
+        return input;
 
-      string content = renderedContent.Content;
       var doc = new HtmlDocument();
-
-      // Remove html tags
-      doc.LoadHtml(content);
-
-      renderedContent.Content = doc.DocumentNode.InnerText;
-      renderedContent.AppliedFilters.Add("text");
+      doc.LoadHtml(input);
+      return doc.DocumentNode.InnerText;
 
     }
   }

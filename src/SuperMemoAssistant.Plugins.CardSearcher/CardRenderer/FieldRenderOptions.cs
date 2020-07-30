@@ -12,7 +12,23 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
   public class TemplateRenderOptions
   {
 
-    public References Refs { get; set; }
+    /// <summary>
+    /// Defines references for imported cards.
+    /// Supports basic placeholder variables to add card-specific information.
+    /// </summary>
+    public References Refs { get; set; } = new References()
+      .WithSource("Anki Deck \'${DeckName}\'")
+      .WithDate(DateTime.Today)
+      .WithTitle("Anki Card from \'${SubdeckName}\'");
+
+    /// <summary>
+    /// The layout for the imported card.
+    /// </summary>
+    public string Layout { get; set; }
+
+    /// <summary>
+    /// True if images should be extracted into their own components.
+    /// </summary>
     public bool AddImageComponents { get; set; }
 
   }

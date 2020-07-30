@@ -6,10 +6,12 @@
         xmlns:local="clr-namespace:SuperMemoAssistant.Plugins.CardSearcher.UI"
         mc:Ignorable="d"
         Title="Card Suggestions"
-        Height="1000"
-        Width="400">
+        Height="500"
+        Width="1200">
   <Window.Resources>
     <local:CardCollection x:Key="cards" />
+    <local:DeckBaseNameSelector x:Key="DeckBaseNameSelector"/>
+    <local:CardTemplateSelector x:Key="CardTemplateSelector"/>
     <CollectionViewSource x:Key="cvsCards"
                           Source="{StaticResource cards}">
       <CollectionViewSource.GroupDescriptions>
@@ -30,7 +32,7 @@
     </Grid.RowDefinitions>
     <DataGrid AutoGenerateColumns="False"
               Margin="5"
-              ItemsSource="{Binding Source={StaticResource cvsExtracts}}"
+              ItemsSource="{Binding Source={StaticResource cvsCards}}"
               CanUserAddRows="False"
               Name="DG1">
         <DataGrid.GroupStyle>
@@ -45,9 +47,9 @@
                       <Expander IsExpanded="True" Background="#FF112255" BorderBrush="#FF002255" Foreground="#FFEEEEEE" BorderThickness="1,1,1,5">
                         <Expander.Header>
                           <DockPanel>
-                            <TextBlock Text="Language:" Margin="3" FontWeight="Bold"></TextBlock>
+                            <TextBlock Text="Deck:" Margin="3" FontWeight="Bold"></TextBlock>
                             <TextBlock FontWeight="Bold" Text="{Binding Path=Name}" Margin="3" Width="100"/>
-                            <TextBlock Text="Language:" Margin="3" FontWeight="Bold"></TextBlock>
+                            <TextBlock Text="Cards:" Margin="3" FontWeight="Bold"></TextBlock>
                             <TextBlock FontWeight="Bold" Margin="3" Text="{Binding Path=ItemCount}"/>
                           </DockPanel>
                         </Expander.Header>
@@ -66,14 +68,14 @@
             <GroupStyle.HeaderTemplate>
               <DataTemplate>
                 <DockPanel Background="LightBlue">
-                  <TextBlock Text="Project:"
+                  <TextBlock Text="Template:"
                            FontWeight="Bold"
                            Margin="3">
                   </TextBlock>
                   <TextBlock Text="{Binding Path=Name}"
                            Foreground="Blue"
                            Margin="3"/>
-                  <TextBlock Text="Count:"
+                  <TextBlock Text="Cards:"
                            FontWeight="Bold"
                            Margin="3">
                   </TextBlock>
@@ -124,5 +126,13 @@
           </DataGridTemplateColumn>
         </DataGrid.Columns>
       </DataGrid>
+
+    <Button Name="ImportBtn"
+            Click="ImportBtn_Click"
+            Grid.Row="1"
+            HorizontalAlignment="Right"
+            Margin="5">
+      IMPORT
+    </Button>
   </Grid>
 </Window>
