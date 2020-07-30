@@ -3,6 +3,7 @@ using SuperMemoAssistant.Plugins.CardSearcher.CardRenderer;
 using SuperMemoAssistant.Plugins.CardSearcher.Models.Decks;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -171,68 +172,23 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
       }
     }
 
-    /// <summary>
-    /// Rendering result cached in private field.
-    /// </summary>
-    private string _question { get; set; }
-
-    /// <summary>
-    /// Renders the question and returns it
-    /// </summary>
-    public Dictionary<string, string> Question
+    public string Question
     {
       get
       {
-
-        if (string.IsNullOrEmpty(_question))
-        {
-          var renderer = new Renderer(this).Render(TemplateType.Question);
-          string question = renderer.Render(Template.QuestionFormat, Note.Fields);
-          _question = $@"
-          <html>
-            <style>
-              {Note.NoteType.CSS.Replace("\n", "").Replace("\r", "")}
-            </style>
-            <body>
-              <div class=""card"">
-                {question}
-              </div>
-            </body>
-          </html>";
-        }
-
-        return _question;
       }
     }
 
-    /// <summary>
-    /// Rendering result cached in private field.
-    /// </summary>
-    private string _answer { get; set; }
-    public string Answer
+    public Dictionary<string, RenderContent> RenderQuestionContent()
     {
-      get
-      {
+      return new Renderer(this)
+        .Render(TemplateType.Question);
+    }
 
-        if (string.IsNullOrEmpty(_answer))
-        {
-          var renderer = new Renderer(this).Render(TemplateType.Answer);
-          string answer = renderer.Render(Template.AnswerFormat, Note.Fields);
-          _answer = $@"
-          <html>
-            <style>
-              {Note.NoteType.CSS}
-            </style>
-            <body>
-              <div class=""card"">
-                {answer}
-              </div>
-            </body>
-          </html>";
-        }
-
-        return _answer;
-      }
+    public Dictionary<string, RenderContent> RenderAnswerContent()
+    {
+      return new Renderer(this)
+        .Render(TemplateType.Answer);
     }
 
     // Relationships
@@ -240,6 +196,33 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
     public Note Note { get; set; }
 
     public Deck Deck { get; set; }
+
+    // For UI
+    /// <summary>
+    /// Notifiy the UI for the changed Deck in Question.
+    /// </summary>
+    private bool _ToImport { get; set; } = false;
+    public bool ToImport
+    {
+      get { return this._ToImport; }
+      set
+      {
+        if (value != this._ToImport)
+        {
+          this._ToImport = value;
+          NotifyPropertyChanged(nameof(ToImport));
+        }
+      }
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    private void NotifyPropertyChanged(string propertyName)
+    {
+      if (PropertyChanged != null)
+      {
+        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+      }
+    }
 
   }
 }

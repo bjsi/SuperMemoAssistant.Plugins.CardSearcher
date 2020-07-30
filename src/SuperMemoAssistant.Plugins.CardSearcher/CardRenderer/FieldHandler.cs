@@ -71,7 +71,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
       var split = key.Split(':');
 
-      if (key.Split(':').Length > 1)
+      if (split.Length > 1)
       {
 
         // Has filters
@@ -82,8 +82,28 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
         if (type == TemplateType.Question)
           ApplyQuestionFieldFilters(fieldName, filters);
+
         else
           ApplyAnswerFieldFilters(fieldName, filters);
+
+      }
+      else
+      {
+
+        if (type == TemplateType.Question)
+        {
+
+          QuestionContent[fieldName] = new RenderContent();
+          QuestionContent[fieldName].Content = content;
+
+        }
+        else
+        {
+
+          AnswerContent[fieldName] = new RenderContent();
+          AnswerContent[fieldName].Content = content;
+
+        }
 
       }
     }
@@ -98,6 +118,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
         if (type == TemplateType.Answer)
           HandleSpecialFieldAnswer(TagFieldHandler, key);
+
         else
           HandleSpecialFieldQuestion(TagFieldHandler, key);
 
@@ -107,6 +128,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
         if (type == TemplateType.Answer)
           HandleSpecialFieldAnswer(TypeFieldHandler, key);
+
         else
           HandleSpecialFieldQuestion(TypeFieldHandler, key);
 
@@ -116,6 +138,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
         if (type == TemplateType.Answer)
           HandleSpecialFieldAnswer(DeckFieldHandler, key);
+
         else
           HandleSpecialFieldQuestion(DeckFieldHandler, key);
 
@@ -125,6 +148,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
         if (type == TemplateType.Answer)
           HandleSpecialFieldAnswer(SubdeckFieldHandler, key);
+
         else
           HandleSpecialFieldQuestion(SubdeckFieldHandler, key);
 
@@ -134,6 +158,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
         if (type == TemplateType.Answer)
           HandleSpecialFieldAnswer(CardFieldHandler, key);
+
         else
           HandleSpecialFieldQuestion(CardFieldHandler, key);
 
@@ -143,6 +168,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
         if (type == TemplateType.Answer)
           HandleSpecialFieldAnswer(FrontSideFieldHandler, key);
+
         else
           HandleSpecialFieldQuestion(FrontSideFieldHandler, key);
       }
@@ -155,8 +181,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       var split = key.Split(':');
       var fieldName = split.Last();
 
+      // Add the content from the special field handler
       fieldHandler(AnswerContent, fieldName);
 
+      // Add filters if specified
       if (split.Length > 1)
       {
 

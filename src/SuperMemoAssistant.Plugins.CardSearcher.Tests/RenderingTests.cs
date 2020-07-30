@@ -26,12 +26,37 @@
 
 #endregion
 
-
+using SuperMemoAssistant.Plugins.CardSearcher.Models;
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Xunit;
 
 
 namespace SuperMemoAssistant.Plugins.CardSearcher.Tests
 {
-    class Class1
+
+  public class RenderingTests
+  {
+
+    private static readonly string file = @"C:\Users\james\source\repos\AnkiImporter\src\SuperMemoAssistant.Plugins.AnkiImporter.Tests\Fixture\TestCollection\User 1\collection.anki2";
+    private DataAccess db { get; } = new DataAccess(file);
+
+    [Fact]
+    public async Task RenderCard()
     {
+
+      Expression<Func<Card, bool>> filter = (c) => c.Id == 1518852959231;
+      var results = await db.GetCardsAsync(filter).ConfigureAwait(false);
+      var card = results.First();
+
+      var q = card.RenderQuestionContent();
+      var a = card.RenderAnswerContent();
+
     }
+
+
+
+  }
 }

@@ -5,8 +5,124 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SuperMemoAssistant.Plugins.CardSearcher.UI"
         mc:Ignorable="d"
-        Title="Card Window" Height="1000" Width="400">
-    <Grid>
+        Title="Card Suggestions"
+        Height="1000"
+        Width="400">
+  <Window.Resources>
+    <local:CardCollection x:Key="cards" />
+    <CollectionViewSource x:Key="cvsCards"
+                          Source="{StaticResource cards}">
+      <CollectionViewSource.GroupDescriptions>
         
-    </Grid>
+        <PropertyGroupDescription PropertyName="."
+                                  Converter="{StaticResource DeckBaseNameSelector}"/>
+        
+        <PropertyGroupDescription PropertyName="."
+                                  Converter="{StaticResource CardTemplateSelector}"/>
+        
+      </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
+  </Window.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition></RowDefinition>
+      <RowDefinition Height="30"></RowDefinition>
+    </Grid.RowDefinitions>
+    <DataGrid AutoGenerateColumns="False"
+              Margin="5"
+              ItemsSource="{Binding Source={StaticResource cvsExtracts}}"
+              CanUserAddRows="False"
+              Name="DG1">
+        <DataGrid.GroupStyle>
+          <!-- Style for groups at top level. -->
+          <GroupStyle>
+            <GroupStyle.ContainerStyle>
+              <Style TargetType="{x:Type GroupItem}">
+                <Setter Property="Margin" Value="0,0,0,5"/>
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                      <Expander IsExpanded="True" Background="#FF112255" BorderBrush="#FF002255" Foreground="#FFEEEEEE" BorderThickness="1,1,1,5">
+                        <Expander.Header>
+                          <DockPanel>
+                            <TextBlock Text="Language:" Margin="3" FontWeight="Bold"></TextBlock>
+                            <TextBlock FontWeight="Bold" Text="{Binding Path=Name}" Margin="3" Width="100"/>
+                            <TextBlock Text="Language:" Margin="3" FontWeight="Bold"></TextBlock>
+                            <TextBlock FontWeight="Bold" Margin="3" Text="{Binding Path=ItemCount}"/>
+                          </DockPanel>
+                        </Expander.Header>
+                        <Expander.Content>
+                          <ItemsPresenter />
+                        </Expander.Content>
+                      </Expander>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </GroupStyle.ContainerStyle>
+          </GroupStyle>
+          <!-- Style for groups under the top level. -->
+          <GroupStyle>
+            <GroupStyle.HeaderTemplate>
+              <DataTemplate>
+                <DockPanel Background="LightBlue">
+                  <TextBlock Text="Project:"
+                           FontWeight="Bold"
+                           Margin="3">
+                  </TextBlock>
+                  <TextBlock Text="{Binding Path=Name}"
+                           Foreground="Blue"
+                           Margin="3"/>
+                  <TextBlock Text="Count:"
+                           FontWeight="Bold"
+                           Margin="3">
+                  </TextBlock>
+                  <TextBlock Text="{Binding Path=ItemCount}"
+                           Foreground="Blue"
+                           Margin="3"/>
+                </DockPanel>
+              </DataTemplate>
+            </GroupStyle.HeaderTemplate>
+          </GroupStyle>
+        </DataGrid.GroupStyle>
+        <DataGrid.Columns>
+
+          <!-- Import Column -->
+          <DataGridTemplateColumn Header="Import?">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <CheckBox IsChecked="{Binding ToImport, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center">
+                </CheckBox>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <!-- Question Column -->
+          <DataGridTemplateColumn Header="Question"
+                            MaxWidth="500"
+                            Width="500">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <WebBrowser local:BrowserBehavior.Html="{Binding Question}">
+                </WebBrowser>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <!-- Answer Column -->
+          <DataGridTemplateColumn Header="Answer"
+                            MaxWidth="500"
+                            Width="500">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <WebBrowser local:BrowserBehavior.Html="{Binding Answer}">
+                </WebBrowser>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+        </DataGrid.Columns>
+      </DataGrid>
+  </Grid>
 </Window>

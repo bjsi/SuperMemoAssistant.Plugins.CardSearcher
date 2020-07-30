@@ -23,7 +23,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     private void ApplyQuestionFieldFilters(string fieldName, List<string> filters)
     {
 
-      if (!QuestionContent.TryGetValue(fieldName, out var content))
+      if (!QuestionContent.ContainsKey(fieldName))
       {
         LogTo.Error("Failed to find fieldName in the QuestionContent dictionary");
         return;
@@ -50,7 +50,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     private void ApplyAnswerFieldFilters(string fieldName, List<string> filters)
     {
 
-      if (!AnswerContent.TryGetValue(fieldName, out var content))
+      if (!AnswerContent.ContainsKey(fieldName))
       {
         LogTo.Error("Failed to find fieldName in the QuestionContent dictionary");
         return;

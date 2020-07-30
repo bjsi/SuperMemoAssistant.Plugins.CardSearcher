@@ -87,7 +87,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     /// Create the stubble html render for card content.
     /// </summary>
     /// <returns>Renderer or Null</returns>
-    public async Task<Dictionary<string, RenderContent>> Render(TemplateType type)
+    public Dictionary<string, RenderContent> Render(TemplateType type)
     {
 
       if (this.Card == null)
@@ -111,14 +111,14 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (type == TemplateType.Question)
       {
 
-        await renderer.RenderAsync(Card.Template.QuestionFormat, Card.Note.Fields);
+        renderer.Render(Card.Template.QuestionFormat, Card.Note.Fields);
         return QuestionContent;
 
       }
       else
       {
 
-        await renderer.RenderAsync(Card.Template.AnswerFormat, Card.Note.Fields);
+        renderer.Render(Card.Template.AnswerFormat, Card.Note.Fields);
         return AnswerContent;
 
       }
