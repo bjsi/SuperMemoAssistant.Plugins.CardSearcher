@@ -15,12 +15,11 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
       "hint",
       "type",
-      "cloze"
+      "cloze",
+      "text"
 
     };
 
-
-    // Uses the QuestionContent dict
     private void ApplyQuestionFieldFilters(string fieldName, List<string> filters)
     {
 
@@ -34,17 +33,16 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       {
 
         if (filter == "hint")
-        {
+          HintFilter(QuestionContent, fieldName);
 
-        }
         else if (filter == "type")
-        {
+          QuestionTypeFilter(fieldName);
 
-        }
         else if (filter == "cloze")
-        {
+          QuestionClozeFilter(fieldName);
 
-        }
+        else if (filter == "text")
+          TextFilter(QuestionContent, fieldName);
 
       }
     }
@@ -62,19 +60,18 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       {
 
         if (filter == "hint")
-        {
+          HintFilter(AnswerContent, fieldName);
 
-        }
         else if (filter == "type")
-        {
+          AnswerTypeFilter(fieldName);
 
-        }
         else if (filter == "cloze")
-        {
+          AnswerClozeFilter(fieldName);
 
-        }
+        else if (filter == "text")
+          TextFilter(AnswerContent, fieldName);
+
       }
-
     }
   }
 }

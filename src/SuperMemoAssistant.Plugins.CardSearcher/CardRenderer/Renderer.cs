@@ -18,10 +18,13 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     Answer
   }
 
-  public class FieldRenderOptions
+  public class RenderContent
   {
-    // Extract pictures from fields into their own components or leave them
-    public bool ExtractPictures = true;
+
+    public string Content { get; set; }
+    public List<string> AppliedFilters = new List<string>();
+    public List<string> UnappliedFilters = new List<string>();
+
   }
 
   public partial class Renderer
@@ -35,8 +38,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     // Rendered Field Content
     // Still contains media
-    private Dictionary<string, string> AnswerContent { get; set; } = new Dictionary<string, string>();
-    private Dictionary<string, string> QuestionContent { get; set; } = new Dictionary<string, string>();
+    private Dictionary<string, RenderContent> AnswerContent { get; set; } = new Dictionary<string, RenderContent>();
+    private Dictionary<string, RenderContent> QuestionContent { get; set; } = new Dictionary<string, RenderContent>();
 
     public Renderer(Card Card)
     {
@@ -64,9 +67,15 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
           // Filters like cloze and hint are prepended to the field name, separated by colons :
 
           var input = val as Dictionary<string, string>;
-          return type == TemplateType.Question
-          ? HandleField(input, key, type) ?? string.Empty
-          : HandleField(input, key, type) ?? string.Empty;
+
+          if (type == TemplateType.Question)
+            HandleField(input, key, type);
+          else
+            HandleField(input, key, type);
+
+          // Only using the renderer to build the Question/AnswerContent dictionaries
+          // Ignore output
+          return string.Empty;
 
         })
         .SetEncodingFunction(x => x); // allow unescaped html
@@ -78,7 +87,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     /// Create the stubble html render for card content.
     /// </summary>
     /// <returns>Renderer or Null</returns>
-    public async Task<Dictionary<string, string>> Render(TemplateType type)
+    public async Task<Dictionary<string, RenderContent>> Render(TemplateType type)
     {
 
       if (this.Card == null)

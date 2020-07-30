@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 {
 
-  using FieldHandlerFunc = Func<Dictionary<string, string>, string, string>;
+  using FieldHandlerFunc = Action<Dictionary<string, RenderContent>, string>;
 
   public partial class Renderer
   {
@@ -40,21 +40,21 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     }
 
-    public string HandleField(Dictionary<string, string> obj, string key, TemplateType type)
+    public void HandleField(Dictionary<string, string> obj, string key, TemplateType type)
     {
 
       if (!HandleFieldArgumentsAreValid(obj, key))
-        return string.Empty;
+        return;
 
       string fieldName = GetFieldName(key);
       if (fieldName.IsNullOrEmpty())
-        return string.Empty;
+        return;
 
       if (SpecialFields.Contains(fieldName))
-        return HandleSpecialField(obj, key, type);
+        HandleSpecialField(key, type);
 
       else
-        return HandleUserField(obj, key, type);
+        HandleUserField(obj, key, type);
 
     }
 
@@ -69,13 +69,14 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
         return;
       }
 
+      var split = key.Split(':');
+
       if (key.Split(':').Length > 1)
       {
 
         // Has filters
-        var filters = key
-          .Split(':')
-          .Skip(1)
+        var filters = split
+          .Skip(1) // Skip the fieldName
           .Reverse()
           .ToList();
 
@@ -87,49 +88,74 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       }
     }
 
-    private string HandleSpecialField(Dictionary<string, string> obj, string key, TemplateType type)
+    private void HandleSpecialField(string key, TemplateType type)
     {
 
       string fieldName = GetFieldName(key);
 
       if (fieldName == "Tags")
-        return type == TemplateType.Answer
-          ? HandleSpecialFieldAnswer(TagFieldHandler, obj, key)
-          : HandleSpecialFieldQuestion(TagFieldHandler, obj, key);
+      {
 
+        if (type == TemplateType.Answer)
+          HandleSpecialFieldAnswer(TagFieldHandler, key);
+        else
+          HandleSpecialFieldQuestion(TagFieldHandler, key);
+
+      }
       else if (fieldName == "Type")
-        return type == TemplateType.Answer
-          ? HandleSpecialFieldAnswer(TypeFieldHandler, obj, key)
-          : HandleSpecialFieldQuestion(TypeFieldHandler, obj, key);
+      {
 
+        if (type == TemplateType.Answer)
+          HandleSpecialFieldAnswer(TypeFieldHandler, key);
+        else
+          HandleSpecialFieldQuestion(TypeFieldHandler, key);
+
+      }
       else if (fieldName == "Deck")
-        return type == TemplateType.Answer
-          ? HandleSpecialFieldAnswer(DeckFieldHandler, obj, key)
-          : HandleSpecialFieldQuestion(DeckFieldHandler, obj, key);
+      {
 
+        if (type == TemplateType.Answer)
+          HandleSpecialFieldAnswer(DeckFieldHandler, key);
+        else
+          HandleSpecialFieldQuestion(DeckFieldHandler, key);
+
+      }
       else if (fieldName == "Subdeck")
-        return type == TemplateType.Answer
-          ? HandleSpecialFieldAnswer(SubdeckFieldHandler, obj, key)
-          : HandleSpecialFieldQuestion(SubdeckFieldHandler, obj, key);
+      {
 
+        if (type == TemplateType.Answer)
+          HandleSpecialFieldAnswer(SubdeckFieldHandler, key);
+        else
+          HandleSpecialFieldQuestion(SubdeckFieldHandler, key);
+
+      }
       else if (fieldName == "Card")
-        return type == TemplateType.Answer
-          ? HandleSpecialFieldAnswer(CardFieldHandler, obj, key)
-          : HandleSpecialFieldQuestion(CardFieldHandler, obj, key);
+      {
 
+        if (type == TemplateType.Answer)
+          HandleSpecialFieldAnswer(CardFieldHandler, key);
+        else
+          HandleSpecialFieldQuestion(CardFieldHandler, key);
+
+      }
       else if (fieldName == "FrontSide")
-        return type == TemplateType.Answer
-          ? HandleSpecialFieldAnswer(FrontSideFieldHandler, obj, key)
-          : HandleSpecialFieldQuestion(FrontSideFieldHandler, obj, key);
+      {
 
-      return null;
+        if (type == TemplateType.Answer)
+          HandleSpecialFieldAnswer(FrontSideFieldHandler, key);
+        else
+          HandleSpecialFieldQuestion(FrontSideFieldHandler, key);
+      }
 
     }
 
-    private string HandleSpecialFieldAnswer(FieldHandlerFunc func, Dictionary<string, string> input, string key)
+    private void HandleSpecialFieldAnswer(FieldHandlerFunc fieldHandler, string key)
     {
 
       var split = key.Split(':');
+      var fieldName = split.Last();
+
+      fieldHandler(AnswerContent, fieldName);
 
       if (split.Length > 1)
       {
@@ -140,71 +166,61 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
           .Reverse()
           .ToList();
 
-        func(input, key);
-        // TODO:
-
-      }
-      else
-      {
-
-        // Does not have filters
-        return Card.Note.Tags;
+        ApplyAnswerFieldFilters(fieldName, filters);
 
       }
     }
 
-    private string HandleSpecialFieldQuestion(FieldHandlerFunc func, Dictionary<string, string> input, string key)
+    private void HandleSpecialFieldQuestion(FieldHandlerFunc fieldHandler, string key)
     {
 
-      if (key.Split(':').Length > 1)
+      var split = key.Split(':');
+      var fieldName = split.Last();
+
+      fieldHandler(QuestionContent, fieldName);
+
+      if (split.Length > 1)
       {
 
         // Has filters
-        var filters = key
-          .Split(':')
+        var filters = split
           .Skip(1) // Skip the field name
           .Reverse()
           .ToList();
 
-      }
-      else
-      {
-
-        // Does not have filters
-        return Card.Note.Tags;
+        ApplyQuestionFieldFilters(fieldName, filters);
 
       }
-
     }
 
-    public string TagFieldHandler(Dictionary<string, string> input, string key)
+    public void TagFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
     {
-      return Card.Note.Tags;
+      input[fieldName].Content = Card.Note.Tags;
     }
 
-    public string TypeFieldHandler(Dictionary<string, string> input, string key)
+    public void TypeFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
     {
-      return Card.Note.NoteType.Name;
+      input[fieldName].Content = Card.Note.NoteType.Name;
     }
 
-    public string SubdeckFieldHandler(Dictionary<string, string> input, string key)
+    public void SubdeckFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
     {
-      return Card.Note.NoteType.Name;
+      input[fieldName].Content = Card.Note.NoteType.Name;
     }
 
-    public string DeckFieldHandler(Dictionary<string, string> input, string key)
+    public void DeckFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
     {
-      return Card.Note.NoteType.Name;
+      input[fieldName].Content = Card.Note.NoteType.Name;
     }
 
-    public string CardFieldHandler(Dictionary<string, string> input, string key)
+    public void CardFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
     {
-      return Card.Note.NoteType.Name;
+      input[fieldName].Content = Card.Note.NoteType.Name;
     }
 
-    public string FrontSideFieldHandler(Dictionary<string, string> input, string key)
+    public void FrontSideFieldHandler(Dictionary<string, RenderContent> input, string fieldName)
     {
-      return Card.Note.NoteType.Name;
+      input[fieldName].Content = Card.Note.NoteType.Name;
     }
   }
 }
