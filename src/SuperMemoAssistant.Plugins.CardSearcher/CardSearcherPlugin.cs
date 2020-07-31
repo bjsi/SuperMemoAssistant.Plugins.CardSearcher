@@ -43,6 +43,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
   using SuperMemoAssistant.Extensions;
   using SuperMemoAssistant.Interop.SuperMemo.Core;
   using SuperMemoAssistant.Interop.SuperMemo.Elements.Models;
+  using SuperMemoAssistant.Plugins.CardSearcher.Models;
   using SuperMemoAssistant.Services;
   using SuperMemoAssistant.Services.IO.HotKeys;
   using SuperMemoAssistant.Services.Sentry;
@@ -69,6 +70,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
     /// <inheritdoc />
     public override bool HasSettings => false;
     public CardSearcherCfg Config;
+    public List<Card> Cards { get; set; }
+
     #endregion
 
     #region Methods Impl
@@ -98,7 +101,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
 
       LoadConfig();
 
-      await CreateCardIndex();
+      Cards = await GetAllCardsAsync().ConfigureAwait(false);
+      await CreateCardIndexAsync().ConfigureAwait(false);
 
       Svc.SM.UI.ElementWdw.OnElementChanged += new ActionProxy<SMDisplayedElementChangedEventArgs>(OnElementChanged);
 
@@ -108,8 +112,29 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
 
     #region Methods
 
-    private async Task CreateCardIndex()
+    private async Task<List<Card>> GetAllCardsAsync()
     {
+
+      List<Card> ret = new List<Card>();
+      var db = new DataAccess(Config.AnkiCollectionPath);
+      var decks = await db.GetDecksAsync().ConfigureAwait(false);
+      if (decks.IsNull() || !decks.Any())
+        return ret;
+
+      foreach (var deck in decks)
+      {
+        ret.AddRange(deck.Value.Cards);
+      }
+
+      return ret;
+
+    }
+
+    private async Task CreateCardIndexAsync()
+    {
+
+      if (Cards.IsNull() || !Cards.Any())
+        return;
 
       CardIndex = await Index.Build(async builder =>
       {
@@ -118,14 +143,17 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
           .AddField("question")
           .AddField("answer");
 
-        await builder.Add(new Document
+        foreach (var card in Cards)
         {
+          await builder.Add(
+          new Document {
 
-          { "question", "What part of the CPU does primitive arithmetic calculations"},
-          { "answer", "ALU" },
-          { "id", "1" }
+            { "question", card.Question.InnerText() },
+            { "answer", card.Answer.InnerText() },
+            { "id", $"{card.Id}" }
 
-        }).ConfigureAwait(false);
+          }).ConfigureAwait(false);
+        }
       }).ConfigureAwait(false);
 
     }
@@ -193,7 +221,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
         ?.Split((char[])null)
         ?.Select(word => word.Trim(PunctuationAndSymbols))
         ?.Where(word => !word.IsNullOrEmpty())
-        ?.Select(word => word.ToLower())
+        ?.Select(word => word.ToLowerInvariant())
         ?.Where(word => !Stopwords.English.Contains(word));
 
     }

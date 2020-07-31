@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,18 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
 {
   public static class GeneralUtils
   {
+
+    public static string InnerText(this string text)
+    {
+      if (text.IsNullOrEmpty())
+        return string.Empty;
+
+      var doc = new HtmlDocument();
+      doc.LoadHtml(text);
+      return doc.DocumentNode.InnerText;
+
+    }
+
     /// <summary>
     /// Determine whether the object is null
     /// </summary>
