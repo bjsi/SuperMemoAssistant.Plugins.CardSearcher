@@ -56,19 +56,37 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
   /// </summary>
   public partial class CardWdw : Window
   {
+
+    public bool IsClosed { get; set; } = false;
+
     public CardWdw(List<Card> cards)
     {
 
-      if (cards.IsNull() || !cards.Any())
-        return;
-
       InitializeComponent();
+
+      Closed += (sender, args) => IsClosed = true;
+
+      AddCards(cards);
+
+    }
+
+    public void ClearDataGrid()
+    {
+
+      var cards = (CardCollection)this.Resources["cards"];
+      cards?.Clear();
+
+    }
+
+    public void AddCards(List<Card> cards)
+    {
 
       CardCollection _cards = (CardCollection)this.Resources["cards"];
       foreach (var card in cards)
       {
         _cards.Add(card);
       }
+
     }
 
     private void ImportBtn_Click(object sender, RoutedEventArgs e)

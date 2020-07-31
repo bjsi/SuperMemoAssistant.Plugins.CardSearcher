@@ -38,12 +38,14 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
   using System.Runtime.Remoting;
   using System.Threading;
   using System.Threading.Tasks;
+  using System.Windows;
   using Anotar.Serilog;
   using Lunr;
   using SuperMemoAssistant.Extensions;
   using SuperMemoAssistant.Interop.SuperMemo.Core;
   using SuperMemoAssistant.Interop.SuperMemo.Elements.Models;
   using SuperMemoAssistant.Plugins.CardSearcher.Models;
+  using SuperMemoAssistant.Plugins.CardSearcher.UI;
   using SuperMemoAssistant.Services;
   using SuperMemoAssistant.Services.IO.HotKeys;
   using SuperMemoAssistant.Services.Sentry;
@@ -70,7 +72,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
     /// <inheritdoc />
     public override bool HasSettings => false;
     public CardSearcherCfg Config;
-    public List<Card> Cards { get; set; }
+    public Dictionary<string, Card> Cards { get; set; }
+    private CardWdw CurrentWdw { get; set; }
 
     #endregion
 
@@ -112,10 +115,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
 
     #region Methods
 
-    private async Task<List<Card>> GetAllCardsAsync()
+    private async Task<Dictionary<string, Card>> GetAllCardsAsync()
     {
 
-      List<Card> ret = new List<Card>();
+      var ret = new Dictionary<string, Card>();
       var db = new DataAccess(Config.AnkiCollectionPath);
       var decks = await db.GetDecksAsync().ConfigureAwait(false);
       if (decks.IsNull() || !decks.Any())
@@ -123,7 +126,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
 
       foreach (var deck in decks)
       {
-        ret.AddRange(deck.Value.Cards);
+        foreach (var card in deck.Value.Cards)
+        {
+          ret.Add(card.Id.ToString(), card);
+        }
       }
 
       return ret;
@@ -145,12 +151,19 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
 
         foreach (var card in Cards)
         {
+
+          string question = card.Value.Question.InnerText();
+          string answer = card.Value.Question.InnerText();
+          string deck = card.Value.Deck.Basename;
+          string id = card.Value.Id.ToString();
+
           await builder.Add(
           new Document {
 
-            { "question", card.Question.InnerText() },
-            { "answer", card.Answer.InnerText() },
-            { "id", $"{card.Id}" }
+            { "question",   question },
+            { "answer",     answer },
+            { "deck",       deck },
+            { "id",         id }
 
           }).ConfigureAwait(false);
         }
@@ -226,38 +239,83 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
 
     }
 
+    private void OpenCardWdw(List<Card> cards)
+    {
+
+      if (cards.IsNull() || !cards.Any())
+        return;
+
+      Application.Current.Dispatcher.Invoke(() =>
+      {
+
+        CurrentWdw = new CardWdw(cards);
+        CurrentWdw.ShowAndActivate();
+
+      });
+
+    }
+
     private async Task SearchForCards(List<string> words, RemoteCancellationToken ct)
     {
 
       if (words.IsNull() || !words.Any())
         return;
 
+      var results = new Dictionary<string, int>();
+
       try
       {
 
         foreach (var word in words)
         {
-          SearchForCard(word, ct);
-        }
 
+          if (word.IsNullOrEmpty() || ct.IsNull())
+            return;
+
+          if (CardIndex.IsNull())
+            return;
+
+          await foreach (Result res in CardIndex.Search(word, ct.Token()))
+          {
+
+            string id = res.DocumentReference;
+            if (results.ContainsKey(id))
+              results[id]++;
+            else
+              results[id] = 1;
+
+          }
+        }
       }
       catch (TaskCanceledException) { }
 
+      if (!results.IsNull() || !results.Any())
+        return;
+
+      var ordered = results.OrderByDescending(x => x.Value);
+      var cards = new List<Card>();
+      foreach (var pair in ordered)
+      {
+        cards.Add(Cards[pair.Key]);
+      }
+
+      if (CurrentWdw.IsNull() || CurrentWdw.IsClosed)
+        OpenCardWdw(cards);
+      else
+        UpdateCardWdw(cards);
+
     }
 
-    private async Task SearchForCard(string word, RemoteCancellationToken ct)
+    private void UpdateCardWdw(List<Card> cards)
     {
 
-      if (word.IsNullOrEmpty() || ct.IsNull())
-        return;
-
-      if (CardIndex.IsNull())
-        return;
-
-      await foreach (Result res in CardIndex.Search(word, ct.Token()))
+      Application.Current.Dispatcher.Invoke(() => 
       {
-        Trace.WriteLine(res.DocumentReference);
-      }
+
+        CurrentWdw.ClearDataGrid();
+        CurrentWdw.AddCards(cards);
+
+      });
 
     }
 
