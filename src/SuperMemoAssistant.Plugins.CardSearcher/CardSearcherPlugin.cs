@@ -31,6 +31,7 @@
 
 namespace SuperMemoAssistant.Plugins.CardSearcher
 {
+  using System;
   using System.Collections.Generic;
   using System.Diagnostics;
   using System.Diagnostics.CodeAnalysis;
@@ -173,15 +174,25 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
 
     public async void OnElementChanged(SMDisplayedElementChangedEventArgs e)
     {
+
+      var element = e.NewElement;
+      if (element.IsNull())
+        return;
+
+      if (element.Type != ElementType.Item)
+      {
+
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+          CurrentWdw?.Close();
+        });
+
+        return;
+      }
+
       try
       { 
 
-        var element = e.NewElement;
-        if (element.IsNull())
-          return;
-
-        if (element.Type != ElementType.Item)
-          return;
 
         // Cancel search early on element changed event
         var cts = new RemoteCancellationTokenSource();
@@ -235,6 +246,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
         ?.Select(word => word.Trim(PunctuationAndSymbols))
         ?.Where(word => !word.IsNullOrEmpty())
         ?.Select(word => word.ToLowerInvariant())
+        ?.Where(word => word.All(x => char.IsLetterOrDigit(x))) // TODO: this isn't perfect
         ?.Where(word => !Stopwords.English.Contains(word));
 
     }
@@ -312,13 +324,13 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
     private void UpdateCardWdw(List<Card> cards)
     {
 
-      Application.Current.Dispatcher.Invoke(() => 
+      Application.Current.Dispatcher.BeginInvoke((Action)(() => 
       {
 
         CurrentWdw.ClearDataGrid();
         CurrentWdw.AddCards(cards);
 
-      });
+      }));
 
     }
 

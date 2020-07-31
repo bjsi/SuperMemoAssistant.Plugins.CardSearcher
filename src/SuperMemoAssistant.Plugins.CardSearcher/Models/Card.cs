@@ -172,21 +172,93 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
       }
     }
 
+
+    private string _questionFieldsBrowserPreview { get; set; }
+
+    public string QuestionFieldsBrowserPreview { 
+      get
+      {
+        
+        // TODO: Just create a RenderQuestion method that updates both
+        if (_questionFieldsBrowserPreview.IsNull())
+        {
+
+          string output = new Renderer(this).Render(TemplateType.Question, out var fieldDict);
+          _question = output;
+          _questionFieldsBrowserPreview = CreateBrowserPreviewFields(fieldDict);
+
+        }
+
+        return _questionFieldsBrowserPreview;
+
+      } 
+    }
+
+    private string _answerFieldsBrowserPreview { get; set; }
+
+    public string AnswerFieldsBrowserPreview
+    {
+      get
+      {
+
+        if (_answerFieldsBrowserPreview.IsNull())
+        {
+
+          string output = new Renderer(this).Render(TemplateType.Answer, out var fieldDict);
+          _answer = output;
+          _answerFieldsBrowserPreview = CreateBrowserPreviewFields(fieldDict);
+
+        }
+
+        return _answerFieldsBrowserPreview;
+
+      }
+    }
+
+    private string CreateBrowserPreviewFields(Dictionary<string, string> fieldDict)
+    {
+
+      if (fieldDict.IsNull() || !fieldDict.Any())
+        return string.Empty;
+
+      return String.Join("\n", fieldDict.Select(x => x.Key + ": " + x.Value));
+
+    }
+
+    private string _question { get; set; }
     public string Question
     {
       get
       {
-        return new Renderer(this)
-          .Render(TemplateType.Question);
+
+        if (_question.IsNull())
+        {
+          string output = new Renderer(this).Render(TemplateType.Question, out var fieldDict);
+          _question = output;
+          _questionFieldsBrowserPreview = CreateBrowserPreviewFields(fieldDict);
+        }
+
+        return _question;
+
       }
     }
 
+    private string _answer { get; set; }
     public string Answer
     {
       get
       {
-        return new Renderer(this)
-          .Render(TemplateType.Answer);
+
+        if (_answer.IsNull())
+        {
+
+          string output = new Renderer(this).Render(TemplateType.Answer, out var fieldDict);
+          _answer = output;
+          _answerFieldsBrowserPreview = CreateBrowserPreviewFields(fieldDict);
+
+        }
+
+        return _answer;
       }
     }
 

@@ -54,8 +54,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Tests
       var results = await db.GetCardsAsync(filter).ConfigureAwait(false);
       var card = results.First();
 
-      var q = new Renderer(card, collection, media).Render(TemplateType.Question);
-      var a = new Renderer(card, collection, media).Render(TemplateType.Answer);
+      var q = new Renderer(card, collection, media).Render(TemplateType.Question, out _);
+      var a = new Renderer(card, collection, media).Render(TemplateType.Answer, out _);
 
     }
   }

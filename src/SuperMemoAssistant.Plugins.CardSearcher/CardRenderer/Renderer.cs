@@ -41,10 +41,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     private string CollectionPath { get; set; }
     private string MediaPath { get; set; }
 
-    // Rendered Field Content
-    // Still contains media
-    // private Dictionary<string, RenderContent> AnswerContent { get; set; } = new Dictionary<string, RenderContent>();
-    // private Dictionary<string, RenderContent> QuestionContent { get; set; } = new Dictionary<string, RenderContent>();
+    private Dictionary<string, string> RenderedFields { get; set; } = new Dictionary<string, string>();
 
     public Renderer(Card Card)
     {
@@ -78,7 +75,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
         {
 
           var input = val as Dictionary<string, string>;
-          return HandleField(input, key, type);
+          string output = HandleField(input, key, type);
+          string fieldName = GetFieldName(key);
+          RenderedFields[fieldName] = output;
+          return output;
 
         })
         .SetEncodingFunction(x => x); // allow unescaped html
@@ -91,8 +91,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     /// Create the stubble html render for card content.
     /// </summary>
     /// <returns>Renderer or Null</returns>
-    public string Render(TemplateType type)
+    public string Render(TemplateType type, out Dictionary<string, string> renderedFieldsDict)
     {
+
+      renderedFieldsDict = new Dictionary<string, string>();
 
       if (this.Card == null)
       {
@@ -114,6 +116,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (type == TemplateType.Question)
       {
 
+        renderedFieldsDict = RenderedFields;
         string output = renderer.Render(Card.Template.QuestionFormat, Card.Note.Fields);
         return output
           .FixMediaPaths(MediaPath)
@@ -124,6 +127,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       else
       {
 
+        renderedFieldsDict = RenderedFields;
         string output = renderer.Render(Card.Template.AnswerFormat, Card.Note.Fields);
         return output
           .FixMediaPaths(MediaPath)

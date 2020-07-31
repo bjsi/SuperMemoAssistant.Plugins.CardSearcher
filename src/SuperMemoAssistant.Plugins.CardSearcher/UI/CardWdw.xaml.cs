@@ -1,4 +1,5 @@
-﻿using SuperMemoAssistant.Plugins.CardSearcher.CardRenderer;
+﻿using SuperMemoAssistant.Interop.SuperMemo.Elements.Types;
+using SuperMemoAssistant.Plugins.CardSearcher.CardRenderer;
 using SuperMemoAssistant.Plugins.CardSearcher.Models;
 using SuperMemoAssistant.Services;
 using System;
@@ -58,6 +59,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
   {
 
     public bool IsClosed { get; set; } = false;
+    public Card SelectedCard {get;set;}
 
     public CardWdw(List<Card> cards)
     {
@@ -67,6 +69,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
       Closed += (sender, args) => IsClosed = true;
 
       AddCards(cards);
+
+      DataContext = this;
 
     }
 
@@ -105,13 +109,58 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
         return;
       }
 
-      var builder = new AnkiCardBuilder(card);
+      TemplateRenderOptions opts = new TemplateRenderOptions();
+      opts.Refs
+        .WithAuthor(AuthorTextbox.Text)
+        .WithTitle(TitleTextbox.Text)
+        .WithAuthor(SourceTextbox.Text);
+
+      var builder = new AnkiCardBuilder(card).CreateElementBuilder();
+      IElement parent = null;
+
+      double priority = PrioritySlider.Value;
+      if (priority < 0 || priority > 100)
+      {
+        priority = 30;
+      }
+
+      if (ImportChildRadio.IsChecked == true)
+        parent = Svc.SM.UI.ElementWdw.CurrentElement;
 
       Svc.SM.Registry.Element.Add(
         out _,
         Interop.SuperMemo.Elements.Models.ElemCreationFlags.ForceCreate,
-        builder.CreateElementBuilder()
+        builder
+          .WithParent(parent)
+          .WithPriority(priority)
       );
+
+    }
+
+    private void CancelBtn_Click(object sender, RoutedEventArgs e)
+    {
+      Close();
+    }
+
+    private void PrioritySlider_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.PageDown)
+      {
+        PrioritySlider.Value = PrioritySlider.Value <= 95
+          ? PrioritySlider.Value + 5
+          : 100;
+
+        e.Handled = true;
+      }
+      else if (e.Key == Key.PageUp)
+      {
+
+        PrioritySlider.Value = PrioritySlider.Value >= 5
+          ? PrioritySlider.Value - 5
+          : 0;
+
+        e.Handled = true;
+      }
 
     }
   }
