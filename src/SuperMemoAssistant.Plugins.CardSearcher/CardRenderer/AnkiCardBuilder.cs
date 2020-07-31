@@ -6,8 +6,12 @@ using SuperMemoAssistant.Interop.SuperMemo.Content.Models;
 using SuperMemoAssistant.Interop.SuperMemo.Elements.Builders;
 using SuperMemoAssistant.Interop.SuperMemo.Elements.Models;
 using SuperMemoAssistant.Plugins.CardSearcher.Models;
+using SuperMemoAssistant.Services;
+using SuperMemoAssistant.Sys.Drawing;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +38,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     {
 
       this.Card = card;
+      this.RenderOptions = new TemplateRenderOptions();
       AddFieldsToPlaceholderMap();
 
     }
@@ -58,6 +63,50 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     }
 
+    private ImageContent NewImageContent(string src, TemplateType type)
+    {
+
+      AtFlags displayAt = type == TemplateType.Question
+        ? AtFlags.All
+        : AtFlags.NonQuestion;
+
+      if (!File.Exists(src))
+        return null;
+
+      byte[] imageArray = File.ReadAllBytes(src);
+      if (imageArray.IsNull() || !imageArray.Any())
+        return null;
+
+      using (MemoryStream ms = new MemoryStream(imageArray))
+      {
+
+        Image image = Image.FromStream(ms);
+
+        // Add to registry
+        int regId = Svc.SM.Registry.Image.Add(new ImageWrapper(image), src);
+        if (regId == -1)
+          return null;
+
+        return new ImageContent(regId, displayAt: displayAt);
+      }
+
+    }
+
+    private string ParseAndAddImages(string content, List<ContentBase> contents, TemplateType type)
+    {
+
+      var imgs = MediaParser.ParseImages(content);
+      content = MediaParser.RemoveImageTags(content);
+
+      if (imgs.IsNull() || !imgs.Any())
+        return content;
+
+      foreach (var src in imgs) { contents.Add(NewImageContent(src, type)); }
+
+      return content;
+
+    }
+
     public ElementBuilder CreateElementBuilder()
     {
 
@@ -78,25 +127,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (RenderOptions.AddImageComponents)
       {
 
-        var imgs = MediaParser.ParseImages(question);
-        MediaParser.RemoveImageTags(question);
-
-        foreach (var img in imgs)
-        {
-
-        }
-
-      }
-
-      if (RenderOptions.AddImageComponents)
-      {
-
-        var imgs = MediaParser.ParseImages(answer);
-        MediaParser.RemoveImageTags(answer);
-
-        foreach (var img in imgs)
-        {
-        }
+        question = ParseAndAddImages(question, contents, TemplateType.Question);
+        answer = ParseAndAddImages(answer, contents, TemplateType.Answer);
 
       }
 

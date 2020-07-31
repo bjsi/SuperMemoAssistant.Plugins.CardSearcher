@@ -26,6 +26,7 @@
 
 #endregion
 
+using SuperMemoAssistant.Plugins.CardSearcher.CardRenderer;
 using SuperMemoAssistant.Plugins.CardSearcher.Models;
 using System;
 using System.Linq;
@@ -40,8 +41,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Tests
   public class RenderingTests
   {
 
-    private static readonly string file = @"C:\Users\james\source\repos\AnkiImporter\src\SuperMemoAssistant.Plugins.AnkiImporter.Tests\Fixture\TestCollection\User 1\collection.anki2";
-    private DataAccess db { get; } = new DataAccess(file);
+    private static readonly string collection = @"C:\Users\james\source\repos\AnkiImporter\src\SuperMemoAssistant.Plugins.AnkiImporter.Tests\Fixture\TestCollection\User 1\collection.anki2";
+    private static readonly string media = @"C:\Users\james\source\repos\AnkiImporter\src\SuperMemoAssistant.Plugins.AnkiImporter.Tests\Fixture\TestCollection\User 1\collection.media";
+
+    private DataAccess db { get; } = new DataAccess(collection);
 
     [Fact]
     public async Task RenderCard()
@@ -51,8 +54,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Tests
       var results = await db.GetCardsAsync(filter).ConfigureAwait(false);
       var card = results.First();
 
-      var q = card.Question;
-      var a = card.Answer;
+      var q = new Renderer(card, collection, media).Render(TemplateType.Question);
+      var a = new Renderer(card, collection, media).Render(TemplateType.Answer);
 
     }
   }

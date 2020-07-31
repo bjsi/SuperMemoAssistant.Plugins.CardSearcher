@@ -3,12 +3,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SuperMemoAssistant.Plugins.CardSearcher
 {
   public static class GeneralUtils
   {
+
+    public static string ReplaceWhitespace(this string content)
+    {
+      return Regex.Replace(content, @"\s+", " ");
+    }
+
+    public static string AddCss(this string content, string css)
+    {
+
+      return string.Format(@"
+        <html>
+          <head>
+            <style>
+             {0}
+            </style>
+          </head>
+          <body class=""card"">
+            {1}
+          </body>
+        </html>", css, content);
+
+    }
+
 
     public static string InnerText(this string text)
     {

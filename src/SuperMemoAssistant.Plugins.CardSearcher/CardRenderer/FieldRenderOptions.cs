@@ -42,15 +42,15 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       foreach (var kvpair in placeholderMap)
       {
 
-        refs.Author = refs.Author.Replace(kvpair.Key, kvpair.Value);
-        refs.Comment = refs.Comment.Replace(kvpair.Key, kvpair.Value);
+        refs.Author = refs.Author?.Replace(kvpair.Key, kvpair.Value);
+        refs.Comment = refs.Comment?.Replace(kvpair.Key, kvpair.Value);
 
         // Skip Dates
 
-        refs.Email = refs.Comment.Replace(kvpair.Key, kvpair.Value);
-        refs.Link = refs.Link.Replace(kvpair.Key, kvpair.Value);
-        refs.Source = refs.Source.Replace(kvpair.Key, kvpair.Value);
-        refs.Title = refs.Title.Replace(kvpair.Key, kvpair.Value);
+        refs.Email = refs.Comment?.Replace(kvpair.Key, kvpair.Value);
+        refs.Link = refs.Link?.Replace(kvpair.Key, kvpair.Value);
+        refs.Source = refs.Source?.Replace(kvpair.Key, kvpair.Value);
+        refs.Title = refs.Title?.Replace(kvpair.Key, kvpair.Value);
 
       }
     }

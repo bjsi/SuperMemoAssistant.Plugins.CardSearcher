@@ -34,11 +34,14 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
     [Field(Name = "Activated?")]
     public bool Activated { get; set; } = true;
 
+    [Field(Name = "Max Search Results")]
+    public int MaxSearchResults { get; set; } = 20;
+
     [Field(Name = "Path to Anki collection?")]
     public string AnkiCollectionPath { get; set; } = @"C:\Users\james\source\repos\AnkiImporter\src\SuperMemoAssistant.Plugins.AnkiImporter.Tests\Fixture\TestCollection\User 1\collection.anki2";
 
     [Field(Name = "Path to Anki media?")]
-    public string AnkiMediaPath { get; set; }
+    public string AnkiMediaPath { get; set; } = @"C:\Users\james\source\repos\AnkiImporter\src\SuperMemoAssistant.Plugins.AnkiImporter.Tests\Fixture\TestCollection\User 1\collection.media\";
 
     [JsonIgnore]
     public bool IsChanged { get; set; }

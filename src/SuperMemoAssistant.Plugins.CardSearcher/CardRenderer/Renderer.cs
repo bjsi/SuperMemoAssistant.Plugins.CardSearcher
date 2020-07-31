@@ -1,8 +1,10 @@
 ﻿using Anotar.Serilog;
+using HtmlAgilityPack;
 using Stubble.Core;
 using Stubble.Core.Builders;
 using SuperMemoAssistant.Interop.SuperMemo.Content.Contents;
 using SuperMemoAssistant.Plugins.CardSearcher.Models;
+using SuperMemoAssistant.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,11 +34,14 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     // (1: cloze number), (2: text), (3: hint)
     private static Regex ClozeRegex { get; } = new Regex(@"\{\{c(\d+)::(.*?)(?:::(.*?))?\}\}");
+    
     // The card to be rendered.
     private Card Card { get; }
 
-    private TemplateRenderOptions RenderOptions { get; set; }
+    private string CollectionPath { get; set; }
+    private string MediaPath { get; set; }
 
+    private TemplateRenderOptions RenderOptions { get; set; }
 
     // Rendered Field Content
     // Still contains media
@@ -45,7 +50,23 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     public Renderer(Card Card)
     {
+
       this.Card = Card;
+      var Config = Svc<CardSearcherPlugin>.Plugin.Config;
+      CollectionPath = Config.AnkiCollectionPath;
+      MediaPath = Config.AnkiMediaPath;
+      
+
+    }
+
+    // For test cases
+    public Renderer(Card card, string collectionPath, string mediaPath)
+    {
+
+      this.Card = card;
+      this.CollectionPath = collectionPath;
+      this.MediaPath = mediaPath;
+
     }
 
     private StubbleVisitorRenderer BuildRenderer(TemplateType type)
@@ -66,6 +87,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       }).Build();
 
     }
+
 
     /// <summary>
     /// Create the stubble html render for card content.
@@ -92,10 +114,25 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       }
 
       if (type == TemplateType.Question)
-        return renderer.Render(Card.Template.QuestionFormat, Card.Note.Fields);
+      {
 
+        string output = renderer.Render(Card.Template.QuestionFormat, Card.Note.Fields);
+        return output
+          .FixMediaPaths(MediaPath)
+          .AddCss(Card.Note.NoteType.CSS)
+          .ReplaceWhitespace();
+
+      }
       else
-        return renderer.Render(Card.Template.AnswerFormat, Card.Note.Fields);
+      {
+
+        string output = renderer.Render(Card.Template.AnswerFormat, Card.Note.Fields);
+        return output
+          .FixMediaPaths(MediaPath)
+          .AddCss(Card.Note.NoteType.CSS)
+          .ReplaceWhitespace();
+
+      }
 
     }
   }

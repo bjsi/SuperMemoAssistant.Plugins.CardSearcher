@@ -81,7 +81,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
 
     private static readonly char[] PunctuationAndSymbols = new char[]
     {
-      '.', '!', '?', ')', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '\\', '/', '<', '>', ',', ':'
+      '.', '!', '?', ')', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '\\', '/', '<', '>', ',', ':', '[', ']'
     };
 
     public Index CardIndex { get; set; }
@@ -289,10 +289,13 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
       }
       catch (TaskCanceledException) { }
 
-      if (!results.IsNull() || !results.Any())
+      if (results.IsNull() || !results.Any())
         return;
 
-      var ordered = results.OrderByDescending(x => x.Value);
+      var ordered = results
+        .OrderByDescending(x => x.Value)
+        .Take(Config.MaxSearchResults);
+
       var cards = new List<Card>();
       foreach (var pair in ordered)
       {
