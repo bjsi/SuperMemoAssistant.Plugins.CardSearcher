@@ -13,15 +13,13 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
   {
 
     // Video is also in the [sound:...] tag
+    private static readonly string AVRegex = @"(?xs)\[sound: (.*?)\]";
     private static readonly Regex AudioVideoTagRegex = new Regex(@"(?xs)\[sound: (.*?)\]");
 
     // TODO: incomplete
     private static readonly string[] SupportedImageFormats = new[] { ".jpg", ".png", ".gif", ".bmp", ".jpeg" };
     private static readonly string[] SupportedSoundFormats = new[] { ".wav", ".mp3", ".ogg" };
     private static readonly string[] SupportedVideoFormats = new[] { "" };
-
-    // TODO: Write Tests.
-    // TODO: Existence checks of files.
 
     public static List<string> ParseImages(string contentString)
     {
@@ -51,15 +49,15 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
       return relfps;
     }
-    public static List<string> ParseAudioTags(string contentString)
+    public static List<string> ParseAudioTags(string content)
     {
 
       var relfps = new List<string>();
 
-      if (string.IsNullOrEmpty(contentString))
+      if (string.IsNullOrEmpty(content))
         return relfps;
 
-      Match match = AudioVideoTagRegex.Match(contentString);
+      Match match = AudioVideoTagRegex.Match(content);
       while (match.Success && match.Groups.Count >= 2)
       {
         string fp = match.Groups[1].Value;
@@ -74,6 +72,11 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       }
 
       return relfps;
+    }
+
+    public static string RemoveAudioTags(string content)
+    {
+      return Regex.Replace(content, AVRegex, "");
     }
 
     public static List<string> ParseVideoTags(string contentString)
@@ -129,7 +132,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       doc.LoadHtml(contentString);
 
       var imgNodes = doc.DocumentNode.SelectNodes("//img");
-      if (imgNodes == null)
+      if (imgNodes.IsNull() || !imgNodes.Any())
         return contentString;
 
       foreach (var img in imgNodes)

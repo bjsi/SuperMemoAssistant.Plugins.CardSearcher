@@ -29,7 +29,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     /// <summary>
     /// True if images should be extracted into their own components.
     /// </summary>
-    public bool AddImageComponents { get; set; }
+    public bool AddImageComponents { get; set; } = true;
 
   }
 

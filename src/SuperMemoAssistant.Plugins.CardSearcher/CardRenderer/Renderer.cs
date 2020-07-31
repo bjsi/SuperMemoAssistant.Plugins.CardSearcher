@@ -41,8 +41,6 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     private string CollectionPath { get; set; }
     private string MediaPath { get; set; }
 
-    private TemplateRenderOptions RenderOptions { get; set; }
-
     // Rendered Field Content
     // Still contains media
     // private Dictionary<string, RenderContent> AnswerContent { get; set; } = new Dictionary<string, RenderContent>();

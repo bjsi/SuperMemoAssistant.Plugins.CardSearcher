@@ -103,11 +103,12 @@
 
           <!-- Question Column -->
           <DataGridTemplateColumn Header="Question"
-                            MaxWidth="500"
-                            Width="500">
+                            MaxWidth="700"
+                            Width="700">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
-                <WebBrowser local:BrowserBehavior.Html="{Binding Question}">
+                <WebBrowser Height="700"
+                  local:BrowserBehavior.Html="{Binding Question}">
                 </WebBrowser>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
@@ -115,11 +116,12 @@
 
           <!-- Answer Column -->
           <DataGridTemplateColumn Header="Answer"
-                            MaxWidth="500"
-                            Width="500">
+                            MaxWidth="700"
+                            Width="700">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
-                <WebBrowser local:BrowserBehavior.Html="{Binding Answer}">
+                <WebBrowser Height="700"
+                  local:BrowserBehavior.Html="{Binding Answer}">
                 </WebBrowser>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>

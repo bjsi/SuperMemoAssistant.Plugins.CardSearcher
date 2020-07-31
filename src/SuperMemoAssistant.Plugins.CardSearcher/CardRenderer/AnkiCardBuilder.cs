@@ -1,5 +1,4 @@
 ﻿using Anotar.Serilog;
-using Stubble.Core.Builders;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.SuperMemo.Content.Contents;
 using SuperMemoAssistant.Interop.SuperMemo.Content.Models;
@@ -107,6 +106,14 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     }
 
+    // TODO:
+    private string ParseAndAddSound(string content, List<ContentBase> contents, TemplateType type)
+    {
+
+      return MediaParser.RemoveAudioTags(content);
+
+    }
+
     public ElementBuilder CreateElementBuilder()
     {
 
@@ -132,9 +139,18 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
       }
 
+      // Audio
+      question = ParseAndAddSound(question, contents, TemplateType.Question);
+      answer = ParseAndAddSound(answer, contents, TemplateType.Answer);
+
+      // Video
+           
+
+      // Add Content
       contents.Add(new TextContent(true, question));
       contents.Add(new TextContent(true, answer, AtFlags.NonQuestion));
 
+      // Create Element Builder
       return new ElementBuilder(
         ElementType.Item,
         contents.ToArray()
