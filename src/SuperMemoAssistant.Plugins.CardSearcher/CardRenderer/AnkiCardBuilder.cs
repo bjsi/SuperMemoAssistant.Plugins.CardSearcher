@@ -156,6 +156,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
         contents.ToArray()
       )
       .WithLayout(RenderOptions.Layout)
+      .DoNotDisplay()
       .WithReference(_ => refs);
 
     }

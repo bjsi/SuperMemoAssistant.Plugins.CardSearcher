@@ -70,8 +70,16 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
 
       AddCards(cards);
 
+      DG1.SelectionChanged += DG1_SelectionChanged;
+
       DataContext = this;
 
+    }
+
+    private void DG1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      AnswerPreviewer.NavigateToString(SelectedCard.Answer);
+      QuestionPreviewer.NavigateToString(SelectedCard.Question);
     }
 
     public void ClearDataGrid()
@@ -161,6 +169,27 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
 
         e.Handled = true;
       }
+
+    }
+
+    private void CardTypePlaceholderBtn_Click(object sender, RoutedEventArgs e)
+    {
+
+
+    }
+
+    private void NoteTypePlaceholderBtn_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void SubdeckNamePlaceholderBtn_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void DeckNamePlaceholderBtn_Click(object sender, RoutedEventArgs e)
+    {
 
     }
   }

@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Card Suggestions"
         Height="800"
-        Width="800">
+        Width="1100">
   <Window.Resources>
     <local:CardCollection x:Key="cards" />
     <local:DeckBaseNameSelector x:Key="DeckBaseNameSelector"/>
@@ -33,7 +33,7 @@
 
     <Grid>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="1.5*"></ColumnDefinition>
+        <ColumnDefinition Width="500"></ColumnDefinition>
         <ColumnDefinition></ColumnDefinition>
       </Grid.ColumnDefinitions>
       
@@ -114,26 +114,28 @@
           </DataGridTemplateColumn>
 
           <!-- Question Column -->
-          <DataGridTemplateColumn Header="Question"
+          <DataGridTemplateColumn Header="Question Fields"
                             MaxWidth="200"
                             Width="200">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding QuestionFieldsBrowserPreview}"
                            TextWrapping="Wrap"
+                           Foreground="Black"
                            Margin="5"/>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
 
           <!-- Answer Column -->
-          <DataGridTemplateColumn Header="Answer"
+          <DataGridTemplateColumn Header="Answer Fields"
                             MaxWidth="200"
                             Width="200">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding AnswerFieldsBrowserPreview}" 
                            TextWrapping="Wrap"
+                           Foreground="Black"
                            Margin="5"/>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
@@ -153,26 +155,32 @@
 
           <!-- Question Previewer -->
           <WebBrowser Margin="5"
+                      Name="QuestionPreviewer"
                       Grid.Row="0"
-                      local:BrowserBehavior.Html="{Binding SelectedCard.Question}">
+                      local:BrowserBehavior.Html="{Binding SelectedCard.Question, Mode=TwoWay}">
           </WebBrowser>
 
           <!-- Answer Previewer -->
           <WebBrowser Grid.Row="1"
                       Margin="5"
-                      local:BrowserBehavior.Html="{Binding SelectedCard.Answer}">
+                      Name="AnswerPreviewer"
+                      local:BrowserBehavior.Html="{Binding SelectedCard.Answer, Mode=TwoWay}">
           </WebBrowser>
         
           <!-- Import Options -->
+        <Grid Grid.Row="2">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+        
+          <!-- Left Column -->
         <StackPanel Orientation="Vertical"
                     Grid.Row="2">
             <TextBlock Text="Import Options"
                        FontWeight="Bold"
                        Margin="5"/>
           
-            <TextBlock Text="References"
-                       HorizontalAlignment="Center"
-                       Margin="5"/>
           <!-- Author -->
           <DockPanel>
             <TextBlock Margin="3" Text="Author:"/>
@@ -236,6 +244,48 @@
           </DockPanel>
 
         </StackPanel>
+          <!-- Right Column -->
+
+          <StackPanel Orientation="Vertical" Grid.Column="1"
+                      Margin="6">
+            <TextBlock></TextBlock>
+            <DockPanel>
+              <!-- Email -->
+              <TextBlock Text="Email:"
+                         Margin="5"></TextBlock>
+              <TextBox Name="EmailTextbox"
+                       Margin="5"></TextBox>
+
+            </DockPanel>
+            <DockPanel>
+              <TextBlock Text="Link:"
+                          Margin="5"></TextBlock>
+              <TextBox Name="LinkTextbox"
+                       Margin="5"></TextBox>
+            </DockPanel>
+            <!-- Placeholder Buttons -->
+            <DockPanel>
+              
+              <Button Name="DeckNamePlaceholderBtn" Margin="5" Content=" Deck "
+                      Click="DeckNamePlaceholderBtn_Click"></Button>
+              
+              <Button Name="SubdeckNamePlaceholderBtn"
+                      Margin="5"
+                      Content=" Subdeck "
+                      Click="SubdeckNamePlaceholderBtn_Click"></Button>
+              
+              <Button Name="CardTypePlaceholderBtn"
+                      Margin="5"
+                      Content=" Card Type "
+                      Click="CardTypePlaceholderBtn_Click"></Button>
+              
+              <Button Name="NoteTypePlaceholderBtn"
+                      Margin="5"
+                      Content=" Note Type "
+                      Click="NoteTypePlaceholderBtn_Click"></Button>
+            </DockPanel>
+          </StackPanel>
+        </Grid>
       </Grid>
     </Grid>
     

@@ -221,7 +221,9 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
       if (fieldDict.IsNull() || !fieldDict.Any())
         return string.Empty;
 
-      return String.Join("\n", fieldDict.Select(x => x.Key + ": " + x.Value));
+      return String.Join("\n", fieldDict
+        .Where(x => !x.Value.IsNullOrEmpty())
+        .Select(x => x.Key + ": " + x.Value));
 
     }
 
