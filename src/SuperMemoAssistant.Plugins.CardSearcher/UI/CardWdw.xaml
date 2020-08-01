@@ -150,27 +150,45 @@
           Grid.Column="1">
 
         <Grid.RowDefinitions>
+          <RowDefinition Height="0.1*"></RowDefinition>
           <RowDefinition Height="1*"></RowDefinition>
+          <RowDefinition Height="0.1*"></RowDefinition>
           <RowDefinition Height="1*"></RowDefinition>
           <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
 
           <!-- Question Previewer -->
-          <WebBrowser Margin="5"
-                      Name="QuestionPreviewer"
-                      Grid.Row="0"
-                      local:BrowserBehavior.Html="{Binding SelectedCard.Question, Mode=TwoWay}">
-          </WebBrowser>
+          
+          <TextBlock Text="Question Preview"
+                     Margin="5"
+                     FontWeight="Bold"></TextBlock>
 
-          <!-- Answer Previewer -->
-          <WebBrowser Grid.Row="1"
-                      Margin="5"
+          <Border BorderBrush="Black" 
+                  BorderThickness="2"
+                  Grid.Row="1">
+          <WebBrowser 
+                        Name="QuestionPreviewer"
+                        Grid.Row="0"
+                        local:BrowserBehavior.Html="{Binding SelectedCard.Question, Mode=TwoWay}">
+            </WebBrowser>
+        </Border>
+
+        <!-- Answer Previewer -->
+        <TextBlock Text="Answer Preview"
+                   Grid.Row="2"
+                     Margin="5"
+                     FontWeight="Bold"></TextBlock>
+        <Border BorderBrush="Black" 
+                  BorderThickness="2"
+                  Grid.Row="3">
+          <WebBrowser 
                       Name="AnswerPreviewer"
                       local:BrowserBehavior.Html=".">
           </WebBrowser>
-        
-          <!-- Import Options -->
-        <Grid Grid.Row="2">
+        </Border>
+
+        <!-- Import Options -->
+        <Grid Grid.Row="4">
           <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>

@@ -79,8 +79,18 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
 
     private void DG1_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-      AnswerPreviewer.NavigateToString(SelectedCard.Answer);
-      QuestionPreviewer.NavigateToString(SelectedCard.Question);
+
+      if (SelectedCard.IsNull())
+      {
+        AnswerPreviewer.NavigateToString("&nbsp;");
+        QuestionPreviewer.NavigateToString("&nbsp;");
+      }
+      else
+      {
+        AnswerPreviewer.NavigateToString(SelectedCard.Answer);
+        QuestionPreviewer.NavigateToString(SelectedCard.Question);
+      }
+
     }
 
     public void ClearDataGrid()
