@@ -20,12 +20,19 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     Answer
   }
 
-  public class RenderContent
+  public class RenderOptions
   {
 
-    public string Content { get; set; }
-    public List<string> AppliedFilters = new List<string>();
-    public List<string> UnappliedFilters = new List<string>();
+    /// <summary>
+    /// Fields that appear on the question side won't be duplicated on the answer side
+    /// </summary>
+    public bool IgnoreDuplicateFields { get; set; }
+
+    /// <summary>
+    /// If ignore duplicate fields is true, this must be passed to evaluate which 
+    /// fields have already been rendered.
+    /// </summary>
+    public Dictionary<string, string> RenderedQuestionFields { get; set; }
 
   }
 
@@ -35,11 +42,22 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     // (1: cloze number), (2: text), (3: hint)
     private static Regex ClozeRegex { get; } = new Regex(@"\{\{c(\d+)::(.*?)(?:::(.*?))?\}\}");
     
-    // The card to be rendered.
+    /// <summary>
+    /// The card to be rendered
+    /// </summary>
     private Card Card { get; }
 
+    /// <summary>
+    /// Anki collection database path
+    /// </summary>
     private string CollectionPath { get; set; }
+
+    /// <summary>
+    /// Anki collection media path
+    /// </summary>
     private string MediaPath { get; set; }
+
+    private RenderOptions Options { get; set; }
 
     private Dictionary<string, string> RenderedFields { get; set; } = new Dictionary<string, string>();
 
@@ -54,7 +72,12 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     }
 
-    // For test cases
+    /// <summary>
+    /// For test cases
+    /// </summary>
+    /// <param name="card"></param>
+    /// <param name="collectionPath"></param>
+    /// <param name="mediaPath"></param>
     public Renderer(Card card, string collectionPath, string mediaPath)
     {
 
@@ -86,15 +109,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     }
 
-
-    /// <summary>
-    /// Create the stubble html render for card content.
-    /// </summary>
-    /// <returns>Renderer or Null</returns>
-    public string Render(TemplateType type, out Dictionary<string, string> renderedFieldsDict)
+    public string Render(TemplateType type, out Dictionary<string, string> fieldDict)
     {
 
-      renderedFieldsDict = new Dictionary<string, string>();
+      fieldDict = new Dictionary<string, string>();
 
       if (this.Card == null)
       {
@@ -116,7 +134,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (type == TemplateType.Question)
       {
 
-        renderedFieldsDict = RenderedFields;
+        fieldDict = RenderedFields;
         string output = renderer.Render(Card.Template.QuestionFormat, Card.Note.Fields);
         return output
           .FixMediaPaths(MediaPath)
@@ -127,7 +145,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       else
       {
 
-        renderedFieldsDict = RenderedFields;
+        fieldDict = RenderedFields;
         string output = renderer.Render(Card.Template.AnswerFormat, Card.Note.Fields);
         return output
           .FixMediaPaths(MediaPath)

@@ -284,11 +284,34 @@
                       Content=" Note Type "
                       Click="NoteTypePlaceholderBtn_Click"></Button>
             </DockPanel>
+
+          <!-- Picture Options -->
+            <TextBlock Text="Image options"
+                       Margin="5"
+                       HorizontalAlignment="Center"
+                       />
+            <DockPanel >
+              <CheckBox Name="ImageExtractionCheckbox"
+                        Margin="5"
+                        Content="Extract Images into Components"/>
+
+            </DockPanel>
+            
+          <!-- Field Options -->
+            <TextBlock Text="Field options"
+                       Margin="5"
+                       HorizontalAlignment="Center" />
+            <DockPanel>
+              <CheckBox Name="IgnoreDuplicateFieldsCheckbox"
+                        Margin="5"
+                        Content="Ignore duplicate fields"/>
+            </DockPanel>
           </StackPanel>
+          
+          
         </Grid>
       </Grid>
     </Grid>
-    
 
     <!-- Buttons -->
     <Grid Grid.Row="1">

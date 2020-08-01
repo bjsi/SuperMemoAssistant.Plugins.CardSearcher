@@ -172,7 +172,6 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
       }
     }
 
-
     private string _questionFieldsBrowserPreview { get; set; }
 
     public string QuestionFieldsBrowserPreview { 

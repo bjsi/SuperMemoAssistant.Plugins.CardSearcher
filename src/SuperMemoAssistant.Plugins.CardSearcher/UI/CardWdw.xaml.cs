@@ -123,6 +123,16 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
         .WithTitle(TitleTextbox.Text)
         .WithAuthor(SourceTextbox.Text);
 
+      if (ImageExtractionCheckbox.IsChecked == true)
+        opts.AddImageComponents = true;
+      else
+        opts.AddImageComponents = false;
+
+      if (IgnoreDuplicateFieldsCheckbox.IsChecked == true)
+      {
+        // TODO
+      }
+
       var builder = new AnkiCardBuilder(card).CreateElementBuilder();
       IElement parent = null;
 
@@ -172,24 +182,68 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
 
     }
 
+    private TextBox FindActiveReferencesTextbox()
+    {
+
+      if (!AuthorTextbox.SelectedText.IsNull())
+        return AuthorTextbox;
+      else if (!TitleTextbox.SelectedText.IsNull())
+        return TitleTextbox;
+      else if (!LinkTextbox.SelectedText.IsNull())
+        return LinkTextbox;
+      else if (!SourceTextbox.SelectedText.IsNull())
+        return TitleTextbox;
+      else if (!EmailTextbox.SelectedText.IsNull())
+        return TitleTextbox;
+      return null;
+
+    }
+
+
     private void CardTypePlaceholderBtn_Click(object sender, RoutedEventArgs e)
     {
 
+      var textbox = FindActiveReferencesTextbox();
+      if (textbox.IsNull())
+        return;
+
+      if (textbox.SelectedText == string.Empty)
+        textbox.SelectedText = "${CardType}";
 
     }
 
     private void NoteTypePlaceholderBtn_Click(object sender, RoutedEventArgs e)
     {
 
+      var textbox = FindActiveReferencesTextbox();
+      if (textbox.IsNull())
+        return;
+
+      if (textbox.SelectedText == string.Empty)
+        textbox.SelectedText = "${NoteType}";
     }
 
     private void SubdeckNamePlaceholderBtn_Click(object sender, RoutedEventArgs e)
     {
 
+      var textbox = FindActiveReferencesTextbox();
+      if (textbox.IsNull())
+        return;
+
+      if (textbox.SelectedText == string.Empty)
+        textbox.SelectedText = "${Subdeck}";
+
     }
 
     private void DeckNamePlaceholderBtn_Click(object sender, RoutedEventArgs e)
     {
+
+      var textbox = FindActiveReferencesTextbox();
+      if (textbox.IsNull())
+        return;
+
+      if (textbox.SelectedText == string.Empty)
+        textbox.SelectedText = "${CardType}";
 
     }
   }
