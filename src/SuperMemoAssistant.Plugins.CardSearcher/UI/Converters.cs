@@ -1,4 +1,5 @@
-﻿using SuperMemoAssistant.Plugins.CardSearcher.Models;
+﻿using SuperMemoAssistant.Plugins.CardSearcher.CardRenderer;
+using SuperMemoAssistant.Plugins.CardSearcher.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

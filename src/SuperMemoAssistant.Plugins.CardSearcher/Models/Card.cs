@@ -172,95 +172,39 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
       }
     }
 
-    private string _questionFieldsBrowserPreview { get; set; }
-
+    // For UI
     public string QuestionFieldsBrowserPreview { 
       get
       {
-        
-        // TODO: Just create a RenderQuestion method that updates both
-        if (_questionFieldsBrowserPreview.IsNull())
-        {
 
-          string output = new Renderer(this).Render(TemplateType.Question, out var fieldDict);
-          _question = output;
-          _questionFieldsBrowserPreview = CreateBrowserPreviewFields(fieldDict);
-
-        }
-
-        return _questionFieldsBrowserPreview;
+        new Renderer(this).Render(TemplateType.Question, out var fieldDict);
+        return UIEx.CreateBrowserPreviewFields(fieldDict);
 
       } 
     }
 
-    private string _answerFieldsBrowserPreview { get; set; }
-
+    // For UI
     public string AnswerFieldsBrowserPreview
     {
       get
       {
 
-        if (_answerFieldsBrowserPreview.IsNull())
-        {
-
-          string output = new Renderer(this).Render(TemplateType.Answer, out var fieldDict);
-          _answer = output;
-          _answerFieldsBrowserPreview = CreateBrowserPreviewFields(fieldDict);
-
-        }
-
-        return _answerFieldsBrowserPreview;
+        new Renderer(this).Render(TemplateType.Answer, out var fieldDict);
+        return UIEx.CreateBrowserPreviewFields(fieldDict);
 
       }
     }
 
-    private string CreateBrowserPreviewFields(Dictionary<string, string> fieldDict)
-    {
-
-      if (fieldDict.IsNull() || !fieldDict.Any())
-        return string.Empty;
-
-      return String.Join("\n", fieldDict
-        .Where(x => !x.Value.IsNullOrEmpty())
-        .Select(x => x.Key + ": " + x.Value));
-
-    }
-
-    private string _question { get; set; }
+    // For UI
     public string Question
     {
-      get
-      {
-
-        if (_question.IsNull())
-        {
-          string output = new Renderer(this).Render(TemplateType.Question, out var fieldDict);
-          _question = output;
-          _questionFieldsBrowserPreview = CreateBrowserPreviewFields(fieldDict);
-        }
-
-        return _question;
-
-      }
+      get => new Renderer(this).Render(TemplateType.Question, out _);
     }
 
-    private string _answer { get; set; }
+    // For UI
     public string Answer
     {
-      get
-      {
-
-        if (_answer.IsNull())
-        {
-
-          string output = new Renderer(this).Render(TemplateType.Answer, out var fieldDict);
-          _answer = output;
-          _answerFieldsBrowserPreview = CreateBrowserPreviewFields(fieldDict);
-
-        }
-
-        return _answer;
-      }
+      get => new Renderer(this).Render(TemplateType.Answer, out _);
     }
 
     // Relationships

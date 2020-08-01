@@ -1,4 +1,5 @@
-﻿using SuperMemoAssistant.Interop.SuperMemo.Elements.Types;
+﻿using SuperMemoAssistant.Interop.SuperMemo.Elements.Builders;
+using SuperMemoAssistant.Interop.SuperMemo.Elements.Types;
 using SuperMemoAssistant.Plugins.CardSearcher.CardRenderer;
 using SuperMemoAssistant.Plugins.CardSearcher.Models;
 using SuperMemoAssistant.Services;
@@ -128,12 +129,19 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
       else
         opts.AddImageComponents = false;
 
+      ElementBuilder builder = null;
+
       if (IgnoreDuplicateFieldsCheckbox.IsChecked == true)
       {
-        // TODO
+        var question = new Renderer(card).Render(TemplateType.Question, out var fieldDict);
+        var answer = new Renderer(card).RenderAnswerIgnoreDuplicates(fieldDict, out _);
+        builder = new AnkiCardBuilder(card, question, answer).CreateElementBuilder();
+      }
+      else
+      {
+        builder = new AnkiCardBuilder(card).CreateElementBuilder();
       }
 
-      var builder = new AnkiCardBuilder(card).CreateElementBuilder();
       IElement parent = null;
 
       double priority = PrioritySlider.Value;
@@ -185,22 +193,54 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
     private TextBox FindActiveReferencesTextbox()
     {
 
-      if (!AuthorTextbox.SelectedText.IsNull())
+      if (AuthorTextbox.IsFocused)
         return AuthorTextbox;
-      else if (!TitleTextbox.SelectedText.IsNull())
+
+      else if (TitleTextbox.IsFocused)
         return TitleTextbox;
-      else if (!LinkTextbox.SelectedText.IsNull())
+
+      else if (LinkTextbox.IsFocused)
         return LinkTextbox;
-      else if (!SourceTextbox.SelectedText.IsNull())
+
+      else if (SourceTextbox.IsFocused)
         return TitleTextbox;
-      else if (!EmailTextbox.SelectedText.IsNull())
+
+      else if (EmailTextbox.IsFocused)
         return TitleTextbox;
+
       return null;
 
     }
 
+    private void SubdeckNamePlaceholderBtn_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
 
-    private void CardTypePlaceholderBtn_Click(object sender, RoutedEventArgs e)
+      var textbox = FindActiveReferencesTextbox();
+      if (textbox.IsNull())
+        return;
+
+      if (textbox.SelectedText == string.Empty)
+        textbox.SelectedText = "${SubdeckName}";
+
+      e.Handled = true;
+
+    }
+
+    private void DeckNamePlaceholderBtn_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
+
+      var textbox = FindActiveReferencesTextbox();
+      if (textbox.IsNull())
+        return;
+
+      if (textbox.SelectedText == string.Empty)
+        textbox.SelectedText = "${DeckName}";
+
+      e.Handled = true;
+
+    }
+
+    private void CardTypePlaceholderBtn_PreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
 
       var textbox = FindActiveReferencesTextbox();
@@ -210,9 +250,11 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
       if (textbox.SelectedText == string.Empty)
         textbox.SelectedText = "${CardType}";
 
+      e.Handled = true;
+
     }
 
-    private void NoteTypePlaceholderBtn_Click(object sender, RoutedEventArgs e)
+    private void NoteTypePlaceholderBtn_PreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
 
       var textbox = FindActiveReferencesTextbox();
@@ -221,29 +263,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.UI
 
       if (textbox.SelectedText == string.Empty)
         textbox.SelectedText = "${NoteType}";
-    }
 
-    private void SubdeckNamePlaceholderBtn_Click(object sender, RoutedEventArgs e)
-    {
-
-      var textbox = FindActiveReferencesTextbox();
-      if (textbox.IsNull())
-        return;
-
-      if (textbox.SelectedText == string.Empty)
-        textbox.SelectedText = "${Subdeck}";
-
-    }
-
-    private void DeckNamePlaceholderBtn_Click(object sender, RoutedEventArgs e)
-    {
-
-      var textbox = FindActiveReferencesTextbox();
-      if (textbox.IsNull())
-        return;
-
-      if (textbox.SelectedText == string.Empty)
-        textbox.SelectedText = "${CardType}";
+      e.Handled = true;
 
     }
   }

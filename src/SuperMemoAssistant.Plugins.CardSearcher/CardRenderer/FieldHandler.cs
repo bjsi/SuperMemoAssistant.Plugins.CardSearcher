@@ -17,12 +17,14 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     // Special Fields
     public readonly HashSet<string> SpecialFields = new HashSet<string>
     {
+
       "Tags",
       "Type",
       "Deck",
       "Subdeck",
       "Card",
       "FrontSide"
+
     };
 
     private bool HandleFieldArgumentsAreValid(Dictionary<string, string> input, string key)

@@ -26,8 +26,10 @@ namespace SuperMemoAssistant.Plugins.CardSearcher
              {0}
             </style>
           </head>
-          <body class=""card"">
-            {1}
+          <body>
+             <div class=""card"">
+              {1}
+             </div>
           </body>
         </html>", css, content);
 

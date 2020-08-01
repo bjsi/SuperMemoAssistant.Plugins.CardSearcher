@@ -17,7 +17,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     /// Supports basic placeholder variables to add card-specific information.
     /// </summary>
     public References Refs { get; set; } = new References()
-      .WithSource("Anki Deck \'${DeckName}\'")
+      .WithSource("Anki Deck ${DeckName}")
       .WithDate(DateTime.Today)
       .WithTitle("Anki Card from \'${SubdeckName}\'");
 

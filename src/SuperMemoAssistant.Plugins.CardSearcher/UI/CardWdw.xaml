@@ -9,9 +9,11 @@
         Height="800"
         Width="1100">
   <Window.Resources>
+    
     <local:CardCollection x:Key="cards" />
     <local:DeckBaseNameSelector x:Key="DeckBaseNameSelector"/>
     <local:CardTemplateSelector x:Key="CardTemplateSelector"/>
+    
     <CollectionViewSource x:Key="cvsCards"
                           Source="{StaticResource cards}">
       <CollectionViewSource.GroupDescriptions>
@@ -33,7 +35,7 @@
 
     <Grid>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="500"></ColumnDefinition>
+        <ColumnDefinition Width="520"></ColumnDefinition>
         <ColumnDefinition></ColumnDefinition>
       </Grid.ColumnDefinitions>
       
@@ -164,7 +166,7 @@
           <WebBrowser Grid.Row="1"
                       Margin="5"
                       Name="AnswerPreviewer"
-                      local:BrowserBehavior.Html="{Binding SelectedCard.Answer, Mode=TwoWay}">
+                      local:BrowserBehavior.Html=".">
           </WebBrowser>
         
           <!-- Import Options -->
@@ -190,14 +192,20 @@
           <!-- Title -->
           <DockPanel>
             <TextBlock Margin="3" Text="Title:"/>
-            <TextBox Margin="3" Name="TitleTextbox"></TextBox>
+            <TextBox Margin="3"
+                     Name="TitleTextbox"
+                     Text="Anki Card from ${SubdeckName}"></TextBox>
           </DockPanel>
           
           <!-- Source -->
           <DockPanel>
-            <TextBlock Margin="3" Text="Source:"></TextBlock>
-            <TextBox Margin="3" Name="SourceTextbox"></TextBox>
-          </DockPanel>
+              <TextBlock Margin="3"
+                       Text="Source:"
+                       />
+              <TextBox Margin="3"
+                       Name="SourceTextbox"
+                       Text="Anki Deck ${DeckName}" />
+            </DockPanel>
           
           <!-- Import Location -->
           <TextBlock Text="Import Location"
@@ -265,24 +273,30 @@
             </DockPanel>
             <!-- Placeholder Buttons -->
             <DockPanel>
-              
-              <Button Name="DeckNamePlaceholderBtn" Margin="5" Content=" Deck "
-                      Click="DeckNamePlaceholderBtn_Click"></Button>
-              
+
+              <Button Name="DeckNamePlaceholderBtn"
+                      Margin="5"
+                      Content=" Deck "
+                      PreviewMouseDown="DeckNamePlaceholderBtn_PreviewMouseDown"
+                      />
+
               <Button Name="SubdeckNamePlaceholderBtn"
                       Margin="5"
                       Content=" Subdeck "
-                      Click="SubdeckNamePlaceholderBtn_Click"></Button>
-              
+                      PreviewMouseDown="SubdeckNamePlaceholderBtn_PreviewMouseDown"
+                      />
+
               <Button Name="CardTypePlaceholderBtn"
                       Margin="5"
                       Content=" Card Type "
-                      Click="CardTypePlaceholderBtn_Click"></Button>
-              
+                      PreviewMouseDown="CardTypePlaceholderBtn_PreviewMouseDown"
+                      />
+
               <Button Name="NoteTypePlaceholderBtn"
                       Margin="5"
                       Content=" Note Type "
-                      Click="NoteTypePlaceholderBtn_Click"></Button>
+                      PreviewMouseDown="NoteTypePlaceholderBtn_PreviewMouseDown"
+                      />
             </DockPanel>
 
           <!-- Picture Options -->
@@ -292,6 +306,7 @@
                        />
             <DockPanel >
               <CheckBox Name="ImageExtractionCheckbox"
+                        IsChecked="True"
                         Margin="5"
                         Content="Extract Images into Components"/>
 

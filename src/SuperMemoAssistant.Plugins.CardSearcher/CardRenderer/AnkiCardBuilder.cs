@@ -22,6 +22,9 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     private Card Card { get; set; }
     private TemplateRenderOptions RenderOptions { get; set; }
+    private string Question { get; set; }
+    private string Answer { get; set; }
+
 
     private Dictionary<string, string> PlaceholderMap => new Dictionary<string, string>
     {
@@ -38,6 +41,19 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
       this.Card = card;
       this.RenderOptions = new TemplateRenderOptions();
+      Question = Card.Question;
+      Answer = Card.Answer;
+      AddFieldsToPlaceholderMap();
+
+    }
+
+    public AnkiCardBuilder(Card card, string question, string answer)
+    {
+
+      this.Card = card;
+      this.RenderOptions = new TemplateRenderOptions();
+      Question = question;
+      Answer = answer;
       AddFieldsToPlaceholderMap();
 
     }
@@ -121,9 +137,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       References refs = RenderOptions.Refs;
       refs.ReplacePlaceholders(PlaceholderMap);
 
-      string question = Card.Question;
-      string answer = Card.Answer;
-      if (question.IsNullOrEmpty() || answer.IsNullOrEmpty())
+
+      if (Question.IsNullOrEmpty() || Answer.IsNullOrEmpty())
       {
 
         LogTo.Warning("Failed to CreateElementBuilder, question or answer string was null or empty");
@@ -134,21 +149,21 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (RenderOptions.AddImageComponents)
       {
 
-        question = ParseAndAddImages(question, contents, TemplateType.Question);
-        answer = ParseAndAddImages(answer, contents, TemplateType.Answer);
+        Question = ParseAndAddImages(Question, contents, TemplateType.Question);
+        Answer = ParseAndAddImages(Answer, contents, TemplateType.Answer);
 
       }
 
       // Audio
-      question = ParseAndAddSound(question, contents, TemplateType.Question);
-      answer = ParseAndAddSound(answer, contents, TemplateType.Answer);
+      Question = ParseAndAddSound(Question, contents, TemplateType.Question);
+      Answer = ParseAndAddSound(Answer, contents, TemplateType.Answer);
 
       // Video
            
 
       // Add Content
-      contents.Add(new TextContent(true, question));
-      contents.Add(new TextContent(true, answer, AtFlags.NonQuestion));
+      contents.Add(new TextContent(true, Question));
+      contents.Add(new TextContent(true, Answer, AtFlags.NonQuestion));
 
       // Create Element Builder
       return new ElementBuilder(
