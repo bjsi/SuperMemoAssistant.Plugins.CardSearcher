@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 {
-  public partial class Renderer
+  public static class SharedFilters
   {
 
     // TODO:

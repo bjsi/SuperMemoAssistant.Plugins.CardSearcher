@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SuperMemoAssistant.Plugins.CardSearcher.Models
+namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 {
   public static class UIEx
   {
+
     public static string CreateBrowserPreviewFields(Dictionary<string, string> fieldDict)
     {
 
@@ -19,5 +20,6 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
         .Select(x => x.Key + ": " + x.Value));
 
     }
+
   }
 }

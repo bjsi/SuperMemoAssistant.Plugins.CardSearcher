@@ -12,10 +12,6 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
   public static class MediaParser
   {
 
-    // Video is also in the [sound:...] tag
-    private static readonly string AVRegex = @"(?xs)\[sound: (.*?)\]";
-    private static readonly Regex AudioVideoTagRegex = new Regex(@"(?xs)\[sound: (.*?)\]");
-
     // TODO: incomplete
     private static readonly string[] SupportedImageFormats = new[] { ".jpg", ".png", ".gif", ".bmp", ".jpeg" };
     private static readonly string[] SupportedSoundFormats = new[] { ".wav", ".mp3", ".ogg" };
@@ -57,7 +53,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (string.IsNullOrEmpty(content))
         return relfps;
 
-      Match match = AudioVideoTagRegex.Match(content);
+      Match match = AnkiRegexes.AudioVideoRegex.Match(content);
       while (match.Success && match.Groups.Count >= 2)
       {
         string fp = match.Groups[1].Value;
@@ -76,7 +72,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 
     public static string RemoveAudioTags(string content)
     {
-      return Regex.Replace(content, AVRegex, "");
+      return Regex.Replace(content, AnkiRegexes.AudioVideoPattern, "");
     }
 
     public static List<string> ParseVideoTags(string contentString)
@@ -86,7 +82,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (string.IsNullOrEmpty(contentString))
         return relfps;
 
-      Match match = AudioVideoTagRegex.Match(contentString);
+      Match match = AnkiRegexes.AudioVideoRegex.Match(contentString);
       while (match.Success && match.Groups.Count >= 2)
       {
         string filepath = match.Groups[1].Value;
@@ -110,7 +106,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       if (string.IsNullOrEmpty(contentString))
         return string.Empty;
 
-      Match match = AudioVideoTagRegex.Match(contentString);
+      Match match = AnkiRegexes.AudioVideoRegex.Match(contentString);
       int prevIdx = 0;
       while (match.Success && match.Groups.Count >= 2)
       {

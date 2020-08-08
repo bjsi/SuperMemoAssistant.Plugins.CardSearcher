@@ -95,8 +95,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
           {
 
             var input = val as Dictionary<string, string>;
-            string output = HandleField(input, key, TemplateType.Answer);
-            string fieldName = GetFieldName(key);
+            string output = FieldHandler.HandleField(input, key, TemplateType.Answer, Card);
+            string fieldName = FieldHandler.GetFieldName(key);
 
             // Only include field in answer if it is not already in the question
             if (!renderedQuestionFields.ContainsKey(fieldName))
@@ -124,8 +124,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
         {
 
           var input = val as Dictionary<string, string>;
-          string output = HandleField(input, key, type);
-          string fieldName = GetFieldName(key);
+          string output = FieldHandler.HandleField.HandleField(input, key, type, Card);
+          string fieldName = FieldHandler.GetFieldName(key);
           RenderedFields[fieldName] = output;
           return output;
 

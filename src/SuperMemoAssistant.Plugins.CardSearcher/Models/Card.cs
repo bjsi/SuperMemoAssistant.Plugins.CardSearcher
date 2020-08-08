@@ -1,6 +1,7 @@
 ﻿using ServiceStack.DataAnnotations;
 using SuperMemoAssistant.Plugins.CardSearcher.CardRenderer;
 using SuperMemoAssistant.Plugins.CardSearcher.Models.Decks;
+using SuperMemoAssistant.Plugins.CardSearcher.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,7 +24,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
   /// Mapping the cards Table attributes
   /// </summary>
   [Alias("cards")]
-  public class Card
+  public class Card : BaseViewModel
   {
 
     /// <summary>
@@ -195,13 +196,11 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
       }
     }
 
-    // For UI
     public string Question
     {
       get => new Renderer(this).Render(TemplateType.Question, out _);
     }
 
-    // For UI
     public string Answer
     {
       get => new Renderer(this).Render(TemplateType.Answer, out _);
@@ -214,31 +213,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.Models
     public Deck Deck { get; set; }
 
     // For UI
-    /// <summary>
-    /// Notifiy the UI for the changed Deck in Question.
-    /// </summary>
-    private bool _ToImport { get; set; } = false;
-    public bool ToImport
-    {
-      get { return this._ToImport; }
-      set
-      {
-        if (value != this._ToImport)
-        {
-          this._ToImport = value;
-          NotifyPropertyChanged(nameof(ToImport));
-        }
-      }
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-    private void NotifyPropertyChanged(string propertyName)
-    {
-      if (PropertyChanged != null)
-      {
-        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-      }
-    }
+    public bool ToImport { get; set; }
 
   }
 }

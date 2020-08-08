@@ -1,4 +1,5 @@
 ﻿using Anotar.Serilog;
+using SuperMemoAssistant.Plugins.CardSearcher.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
 {
-  public partial class Renderer
+  public static class QuestionFilters
   {
 
-    public string QuestionClozeFilter(string content)
+    public static string QuestionClozeFilter(string content, Card card)
     {
 
       if (string.IsNullOrEmpty(content))
@@ -21,7 +22,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
       }
 
       // Search for the cloze
-      Match match = ClozeRegex.Match(content);
+      Match match = AnkiRegexes.ClozeRegex.Match(content);
       if (!match.Success || match.Groups.Count < 3)
       {
         LogTo.Error("Failed to CreateClozeQuestion because cloze regex didn't match");
@@ -41,7 +42,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
           continue;
         }
 
-        int cardClozeNumber = Card.Ordinal + 1;
+        int cardClozeNumber = card.Ordinal + 1;
         string clozeText = match.Groups[2].Value;
         int matchStart = match.Index;
         int matchEnd = match.Index + match.Length;
@@ -90,11 +91,8 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
     }
 
     // TODO:
-    public string QuestionTypeFilter(string input)
+    public static string QuestionTypeFilter(string input)
     {
-
-      if (input.IsNullOrEmpty())
-        return input;
 
       return input;
 
