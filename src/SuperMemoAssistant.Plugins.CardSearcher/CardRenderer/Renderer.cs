@@ -124,7 +124,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer
         {
 
           var input = val as Dictionary<string, string>;
-          string output = FieldHandler.HandleField.HandleField(input, key, type, Card);
+          string output = FieldHandler.HandleField(input, key, type, Card);
           string fieldName = FieldHandler.GetFieldName(key);
           RenderedFields[fieldName] = output;
           return output;

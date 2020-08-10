@@ -11,7 +11,7 @@ namespace SuperMemoAssistant.Plugins.CardSearcher.CardRenderer.FieldHandlers
   public static class SpecialFields
   {
 
-    public static string TagFieldHandler(Card card:)
+    public static string TagFieldHandler(Card card)
     {
       return card.Note.Tags;
     }
